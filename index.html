@@ -53,75 +53,44 @@ canvas{display:block;image-rendering:pixelated}
 </div>
 
 <script>
-// =============================================
-//  SUPABASE CONFIG — reemplazá GAME_SECRET con
-//  el mismo valor que pusiste en la Edge Function
-// =============================================
 const SB_URL  = 'https://otxfcfzcihantvguqoml.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im90eGZjZnpjaWhhbnR2Z3Vxb21sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3MzU3ODksImV4cCI6MjEwOTMxMTc4OX0.OVVtAXMG08adtGn5tdukiVilk_E_r1hNvhj7RtBc1UA';
-const GAME_SECRET = 'miguarani2024xk39z'; // <-- CAMBIÁ ESTO por tu secreto real
-
 const sb = supabase.createClient(SB_URL, SB_ANON);
 
-// ---- HMAC helper (browser WebCrypto) ----
-async function makeToken(score, ips, ts) {
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw', enc.encode(GAME_SECRET),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
-  );
-  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(`${score}:${ips}:${ts}`));
-  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// ---- Leaderboard ----
-let leaderboard = [], myName = null, gameToken = null, gameTs = null;
+let leaderboard = [], myName = null;
 try { myName = localStorage.getItem('n') || null } catch(e) {}
 
 async function loadLeaderboard() {
   try {
-    const { data } = await sb
+    const { data, error } = await sb
       .from('scores')
       .select('player_name, score, ips')
       .order('score', { ascending: false })
       .limit(20);
+    if (error) throw error;
     leaderboard = data || [];
   } catch(e) { console.log('lb error', e) }
 }
 loadLeaderboard();
-
-// Genera el token al terminar la partida (se llama desde upd())
-async function generateToken(s, i) {
-  gameTs = Date.now();
-  gameToken = await makeToken(s, i, gameTs);
-}
 
 async function saveScore(name) {
   const statusEl = document.getElementById('name-status');
   const cleanName = name.toUpperCase().slice(0,12);
   myName = cleanName;
   try { localStorage.setItem('n', cleanName) } catch(e) {}
-
-  if (!gameToken || !gameTs) {
-    if (statusEl) statusEl.textContent = 'Error: token no generado';
-    return;
-  }
-
   try {
     if (statusEl) statusEl.textContent = 'Guardando...';
-    const res = await fetch(`${SB_URL}/functions/v1/submit-score`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_ANON}` },
-      body: JSON.stringify({ player_name: cleanName, score, ips, token: gameToken, ts: gameTs })
+    const { error } = await sb.from('scores').insert({
+      player_name: cleanName,
+      score: score,
+      ips: ips
     });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.error || res.status);
+    if (error) throw error;
     if (statusEl) statusEl.textContent = '¡Guardado en el ranking! ✓';
-    gameToken = null; // token de un solo uso
     await loadLeaderboard();
   } catch(e) {
     console.log('save error', e);
-    if (statusEl) statusEl.textContent = 'Error al guardar: ' + e.message;
+    if (statusEl) statusEl.textContent = 'Error: ' + (e.message || e);
   }
 }
 
@@ -194,7 +163,7 @@ const SFX={coin:()=>{bp(988,.07,'square',.06);bp(1319,.12,'square',.06,0,.07)},i
 function snd(){tx_(mute?'SON OFF':'SON ON',10,106,'#9cb',6,'left')}
 function mu(){return x2>0?2:1}
 function modalsOpen(){return document.getElementById('lb-modal').classList.contains('show')||document.getElementById('name-modal').classList.contains('show')}
-function reset(){coins=[];score=0;bank=0;t=0;shield=0;spawn=0;beam=0;shake=0;vx=180;ips=0;fl=[];bt=150;bph=0;x2=0;lim=3600;gameToken=null;gameTs=null;st='play';SFX.start()}
+function reset(){coins=[];score=0;bank=0;t=0;shield=0;spawn=0;beam=0;shake=0;vx=180;ips=0;fl=[];bt=150;bph=0;x2=0;lim=3600;st='play';SFX.start()}
 let dx0=0,dp0=180,dn=0;
 function mv(e){if(!dn)return;const r=cv.getBoundingClientRect();tx=Math.max(24,Math.min(336,dp0+(e.clientX-dx0)*W/r.width))}
 cv.addEventListener('pointermove',mv);
@@ -240,7 +209,7 @@ function upd(d){
     if(r<rk)k='r';
     else if(r<rk+.06)k='i';
     else if(r<rk+.12)k='b';
-    else if(r<rk+.04)k='m'; // colchón: solo 4%
+    else if(r<rk+.04)k='m';
     const rn=RN[Math.floor(Math.random()*RN.length)];
     coins.push({x:30+Math.random()*300,y:-10,vy:Math.min(imp?9:6,1.5+lvl*.3)+Math.random(),k,s:0,n:rn.n,p:rn.p});
   }
@@ -264,7 +233,7 @@ function upd(d){
     st='over';SFX.over();overT=performance.now();
     quote=FR[Math.floor(Math.random()*FR.length)];
     if(score>best){best=score;try{localStorage.setItem('b',best)}catch(e){}}
-    generateToken(score,ips).then(()=>setTimeout(askName,900));
+    setTimeout(askName, 900);
   }
 }
 
