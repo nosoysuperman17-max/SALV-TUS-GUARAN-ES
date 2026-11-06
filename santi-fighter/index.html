@@ -482,7 +482,7 @@ function doSpecial(){
       if(Math.abs(E.x-P.x)<120){
         E.hp=Math.max(0,E.hp-50);
         shake=25;
-        stunEnemy(1.1);
+        E._stunned=true;E._stunnedT=1.1;E._stunnedFlash=0;setS(E,'hit');
       }
       break;
     }
@@ -511,7 +511,7 @@ function doSpecial(){
           type:'bill',t:0,life:2.2,dmg:35});
       }
       // DespuÃ©s de 0.4s: congelar enemigo
-      setTimeout(()=>{if(E&&E.st!='ko')stunEnemy(1.0);},400);
+      const _enemySanti=E;setTimeout(()=>{if(_enemySanti&&_enemySanti.st!='ko'){_enemySanti._stunned=true;_enemySanti._stunnedT=1.0;_enemySanti._stunnedFlash=0;setS(_enemySanti,'hit');}},400);
       break;
     }
     case 4:{ // VAZQUEZ (me=4): LLUVIA DE PLATA MASIVA desde arriba
@@ -525,7 +525,7 @@ function doSpecial(){
           type:'bill',t:Math.random()*0.3,life:2.5,dmg:28});
       }
       // Congelar despuÃ©s de 0.5s
-      setTimeout(()=>{if(E&&E.st!='ko')stunEnemy(1.1);},500);
+      const _enemyVaz=E;setTimeout(()=>{if(_enemyVaz&&_enemyVaz.st!='ko'){_enemyVaz._stunned=true;_enemyVaz._stunnedT=1.1;_enemyVaz._stunnedFlash=0;setS(_enemyVaz,'hit');}},500);
       break;
     }
     case 0:{ // LINO-O (me=0): CABALLO PIXELART A TODO GALOPE
@@ -2103,21 +2103,34 @@ cv.addEventListener('pointerdown',e=>{
   if(sc=='fatready'){T.fat=1;}
 });
 
-// Touch buttons
+// Touch buttons — multi-touch: cada dedo tracked por pointerId
+// Cada botón puede tener N dedos encima al mismo tiempo
 document.querySelectorAll('.b').forEach(b=>{
   const k=b.dataset.k;
-  const atk=k=='p'||k=='k'||k=='sp'||k=='u'; // u es pulso como p/k
-  const dn=e=>{
+  const atk=k=='p'||k=='k'||k=='sp'||k=='u';
+  const activePointers=new Set();
+  const press=e=>{
     e.preventDefault();
+    e.stopPropagation();
+    // No capturar: deja que pointerenter/leave funcionen para slide entre botones
     try{b.releasePointerCapture(e.pointerId);}catch(_){}
+    if(activePointers.has(e.pointerId))return;
+    activePointers.add(e.pointerId);
     b.classList.add('on');
     if(sc=='fatready'){T.fat=1;return;}
     if(atk)T[k]=1;else K[k]=1;
   };
-  const up=()=>{b.classList.remove('on');if(!atk)K[k]=0;};
-  b.addEventListener('pointerdown',dn);
-  b.addEventListener('pointerenter',e=>{if(e.buttons)dn(e);});
-  ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,up));
+  const release=e=>{
+    activePointers.delete(e.pointerId);
+    if(activePointers.size===0){
+      b.classList.remove('on');
+      if(!atk)K[k]=0;
+    }
+  };
+  b.addEventListener('pointerdown',press,{passive:false});
+  // slide: si el dedo se mueve encima del botón activa
+  b.addEventListener('pointerenter',e=>{if(e.buttons>0)press(e);},{passive:false});
+  ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,release,{passive:false}));
 });
 
 // Keyboard
