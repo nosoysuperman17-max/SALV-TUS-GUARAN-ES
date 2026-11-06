@@ -1,0 +1,54 @@
+{
+  "_comentario": "Configuración de cada pelea. Orden, oponente, música y escenario.",
+
+  "fightOrder": [1, 4, 2, 3, 0],
+  "_fightOrderComentario": "Índices de personajes en orden de batalla. 0=LINO-O(jefe), 1=ESGAY, 2=CARTER, 3=SANTI, 4=VAZQUEZ",
+
+  "rounds": 3,
+  "roundTime": 90,
+
+  "music": {
+    "_comentario": "Rutas relativas a assets/audio/. BGM normal rota entre los 3 tracks. Boss tiene su propia pista.",
+    "normal": [
+      "bgm1.mp3",
+      "bgm2.mp3",
+      "bgm3.mp3"
+    ],
+    "boss": "bgm_boss.mp3",
+    "volume": 0.55
+  },
+
+  "stages": {
+    "_comentario": "Un escenario por pelea (en orden). Cambiar backgroundIndex para cambiar el fondo.",
+    "fight_0": {
+      "opponent": "ESGAY",
+      "backgroundIndex": 0,
+      "musicTrack": 0,
+      "introText": "¡PELEA!"
+    },
+    "fight_1": {
+      "opponent": "VAZQUEZ",
+      "backgroundIndex": 1,
+      "musicTrack": 1,
+      "introText": "¡PELEA!"
+    },
+    "fight_2": {
+      "opponent": "CARTER",
+      "backgroundIndex": 2,
+      "musicTrack": 2,
+      "introText": "¡PELEA!"
+    },
+    "fight_3": {
+      "opponent": "SANTI",
+      "backgroundIndex": 0,
+      "musicTrack": 0,
+      "introText": "¡PELEA!"
+    },
+    "fight_4": {
+      "opponent": "LINO-O",
+      "backgroundIndex": 1,
+      "musicTrack": "boss",
+      "introText": "¡PELEA FINAL!"
+    }
+  }
+}
