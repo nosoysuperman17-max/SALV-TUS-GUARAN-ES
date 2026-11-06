@@ -9,7 +9,7 @@
 html,body{margin:0;padding:0;width:100vw;height:100vh;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;font-family:'Press Start 2P',monospace;color:#fff}
 html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 
-/* Canvas â letterbox, centrado */
+/* Canvas — letterbox, centrado */
 #c{position:fixed;background:#000;image-rendering:pixelated;}
 
 /* Pantalla de inicio */
@@ -20,7 +20,7 @@ html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 #splash .rot-hint{font-size:9px;color:#ffd400;line-height:2}
 #splash button{margin-top:8px;padding:16px 32px;font-family:'Press Start 2P',monospace;font-size:12px;background:#ff3b3b;color:#fff;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation}
 
-/* Botones â PORTRAIT: zona inferior */
+/* Botones — PORTRAIT: zona inferior */
 #ui{position:fixed;inset:0;pointer-events:none;display:none}
 body.f #ui{display:block}
 
@@ -28,7 +28,7 @@ body.f #ui{display:block}
 .b{position:absolute;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;opacity:.82;border:2px solid rgba(0,0,0,.55);box-shadow:0 3px 0 rgba(0,0,0,.5);color:#fff;text-shadow:0 1px #000;font-family:'Press Start 2P',monospace}
 .b.on{opacity:1;transform:translateY(2px);box-shadow:none}
 
-/* TamaÃ±os landscape */
+/* Tamaños landscape */
 .d{border-radius:8px;background:#333;}
 .r{border-radius:50%;}
 #fat-btn{display:none;border-radius:8px;background:linear-gradient(135deg,#8b0000,#ff0000);border:2px solid #ff6600;white-space:nowrap}
@@ -37,7 +37,7 @@ body.fat #fat-btn{display:flex}
 body.spec #btn-sp{display:flex}
 @keyframes specpulse{from{box-shadow:0 0 8px #cc00ff}to{box-shadow:0 0 20px #cc00ff,0 0 40px #8800cc}}
 
-/* LANDSCAPE â botones en costados, juego llena pantalla */
+/* LANDSCAPE — botones en costados, juego llena pantalla */
 @media (orientation:landscape){
   .d{width:12vmin;height:12vmin;font-size:5vmin}
   .r{width:13vmin;height:13vmin;font-size:1.8vmin}
@@ -53,7 +53,7 @@ body.spec #btn-sp{display:flex}
   #fat-btn{left:50%;transform:translateX(-50%);bottom:1vmin}
 }
 
-/* PORTRAIT â botones en zona inferior, 2 filas compactas */
+/* PORTRAIT — botones en zona inferior, 2 filas compactas */
 @media (orientation:portrait){
   .d{width:14vw;height:14vw;font-size:5vw}
   .r{width:16vw;height:16vw;font-size:1.8vw}
@@ -74,27 +74,27 @@ body.spec #btn-sp{display:flex}
 <div id="splash">
   <h1>SANTI</h1>
   <h2>FIGHTERS</h2>
-  <div class="rot-hint">ð±â¡ï¸ GirÃ¡ el celular para<br>mejor experiencia</div>
-  <div class="hint">TambiÃ©n podÃ©s jugar en vertical</div>
-  <button id="btn-start" ontouchend="startGame(event)">â¶ INICIAR</button>
+  <div class="rot-hint">📱➡️ Girá el celular para<br>mejor experiencia</div>
+  <div class="hint">También podés jugar en vertical</div>
+  <button id="btn-start" ontouchend="startGame(event)">▶ INICIAR</button>
 </div>
 
 <canvas id="c"></canvas>
 <div id="ui">
-  <div class="b d" id="btn-u" data-k="u">â²</div>
-  <div class="b d" id="btn-l" data-k="l">â</div>
-  <div class="b d" id="btn-r" data-k="r">â¶</div>
-  <div class="b d" id="btn-d" data-k="d">â¼</div>
-  <div class="b r" id="btn-p" data-k="p" style="background:#d22">PUÃO</div>
+  <div class="b d" id="btn-u" data-k="u">▲</div>
+  <div class="b d" id="btn-l" data-k="l">◀</div>
+  <div class="b d" id="btn-r" data-k="r">▶</div>
+  <div class="b d" id="btn-d" data-k="d">▼</div>
+  <div class="b r" id="btn-p" data-k="p" style="background:#d22">PUÑO</div>
   <div class="b r" id="btn-k" data-k="k" style="background:#e8b800">PATADA</div>
   <div class="b r" id="btn-g" data-k="g" style="background:#26c">DEFENSA</div>
-  <div class="b r" id="btn-sp" data-k="sp" style="background:#8800cc">â¡ESPECIAL</div>
-  <div class="b" id="fat-btn" data-k="fat">ð FATALITY</div>
+  <div class="b r" id="btn-sp" data-k="sp" style="background:#8800cc">⚡ESPECIAL</div>
+  <div class="b" id="fat-btn" data-k="fat">💀 FATALITY</div>
 </div>
 <script>
 /* Bloquear zoom en iOS Safari */
-document.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
-document.addEventListener('touchend',e=>{e.preventDefault()},{passive:false});
+// multi-touch permitido para botones del juego
+// touchend global removido (manejado por botones)
 document.addEventListener('touchmove',e=>{e.preventDefault()},{passive:false});
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('gesturechange',e=>e.preventDefault());
@@ -159,7 +159,7 @@ function snd(t){
       g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+d+2.0);
       b.connect(g);g.connect(dst);b.start(AC.currentTime+d);b.stop(AC.currentTime+d+2.0);
     });
-    // 3. Golpe metÃ¡lico inicial
+    // 3. Golpe metálico inicial
     const m=AC.createOscillator(),mg=AC.createGain();
     m.type='square';
     m.frequency.setValueAtTime(130,AC.currentTime);
@@ -188,7 +188,7 @@ function snd(t){
     gn.gain.setValueAtTime(.3,AC.currentTime);gn.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.35);
     src.connect(f);f.connect(gn);gn.connect(dst);src.start();
   }
-  else if(t=='heli'){// helicÃ³ptero
+  else if(t=='heli'){// helicóptero
     const o=AC.createOscillator(),g=AC.createGain();
     o.type='sawtooth';o.frequency.value=120;
     const lfo=AC.createOscillator(),lfog=AC.createGain();
@@ -223,7 +223,7 @@ function snd(t){
   }
 }
 
-// === MÃSICA DE FONDO (MP3 real) ===
+// === MÚSICA DE FONDO (MP3 real) ===
 // BGM tracks: bgm0=retro boss battle, bgm1=video game battle, bgm2=fast 8bit chiptune
 // bgm_boss = pelea final contra LINO-O
 const BGM_DATA = [
@@ -238,14 +238,14 @@ let bgAudio = null; // Audio element activo
 function startBgMusic(){
   const isBoss = foes[fi] === 0;
   const src = isBoss ? BGM_BOSS_DATA : BGM_DATA[fi % BGM_DATA.length];
-  // Reusar el mismo elemento Audio â evita el bloqueo de autoplay del navegador
+  // Reusar el mismo elemento Audio — evita el bloqueo de autoplay del navegador
   if(!bgAudio){
     bgAudio = new Audio();
     bgAudio.loop = true;
     bgAudio.volume = 0.55;
   }
   if(bgAudio._src === src){
-    // Misma pista: si estÃ¡ pausada, reanudar
+    // Misma pista: si está pausada, reanudar
     if(bgAudio.paused){bgAudio.play().catch(()=>{setTimeout(()=>{bgAudio&&bgAudio.play().catch(()=>{});},300);});}
     return;
   }
@@ -319,9 +319,9 @@ let comboCount=0,comboTimer=0,comboStr='';
 let fatPhase=0,fatBar=0,fatActive=false,fatParticles=[],fatTimer=0;
 let fatElapsed=0,fatSeq=[],fatSeqIdx=0,fatHitCount=0;
 let fatByEnemy=false; // true cuando la IA hace el fatality al jugador
-let specBar=0; // 0-100, barra de energÃ­a especial del jugador
+let specBar=0; // 0-100, barra de energía especial del jugador
 let specReady=false; // true cuando specBar==100
-let specBarE=0; // barra de energÃ­a especial del enemigo (IA)
+let specBarE=0; // barra de energía especial del enemigo (IA)
 let specReadyE=false;
 let specProjs=[]; // proyectiles del ataque especial
 let bossUnlocked=false;
@@ -368,7 +368,7 @@ function phys(f){
   if(f.y>=0){
     f.y=0;f.air=false;
     if(f._koFlight){
-      // Golpe con el suelo: rebote bajo y fricciÃ³n
+      // Golpe con el suelo: rebote bajo y fricción
       if(f.vy>200){shake=Math.max(shake,10);snd('ko');}
       f.vy=-(f.vy*0.18); // mini rebote
       f.vx*=0.5;
@@ -418,22 +418,22 @@ function strike(f,o){
 
   // Combo management + spec bar fill
   if(f===P&&!bl_){
-    // Jugador encajÃ³ golpe â combo consecutivo
+    // Jugador encajó golpe — combo consecutivo
     const timeSinceLast=bl-P.lastAtk;
     if(timeSinceLast<0.6){comboCount++;comboTimer=1.8;}
     else{comboCount=1;comboTimer=1.8;}
     if(comboCount>=3)comboStr=comboCount>=8?'BRUTAL!!':comboCount>=5?'IMPARABLE!':'COMBO!';
     // Score for hit
     playerScore+=1000;
-    // specBar carga SOLO con golpes encajados consecutivos â cada golpe suma mÃ¡s si es en racha
+    // specBar carga SOLO con golpes encajados consecutivos — cada golpe suma más si es en racha
     if(!specReady){
-      const gain=8+(comboCount*4); // base 12, +4 por golpe en racha (mÃ¡x ~40 en racha larga)
+      const gain=8+(comboCount*4); // base 12, +4 por golpe en racha (máx ~40 en racha larga)
       specBar=Math.min(100,specBar+gain);
       if(specBar>=100){specReady=true;snd('fatbar');}
     }
     snd(f.type=='k'?'kick':'punch');
   } else if(f===E&&!bl_){
-    // Enemigo golpeÃ³ al jugador â PIERDE TODA la barra especial del jugador
+    // Enemigo golpeó al jugador — PIERDE TODA la barra especial del jugador
     comboCount=0;comboStr='';comboTimer=0;
     if(!specReady&&specBar>0){
       specBar=0; // se pierde toda la carga al recibir golpe
@@ -472,13 +472,13 @@ function doSpecial(){
   snd('punch');
   // D.c order: [0=LINO-O, 1=ESGAY, 2=CARTER, 3=SANTI, 4=VAZQUEZ]
   switch(ci){
-    case 1:{ // ESGAY (me=1): GRITO BRUTAL â onda expansiva que sacude TODO
+    case 1:{ // ESGAY (me=1): GRITO BRUTAL — onda expansiva que sacude TODO
       snd('dizzy');
       shake=20;
       specFlash('#ff88ff',0.18);
       // Onda expansiva grande que crece desde Esgay hacia el enemigo
       specProjs.push({x:P.x,y:G-100,vx:P.face*280,vy:0,type:'scream',t:0,life:1.5,dmg:80,r:0});
-      // DaÃ±o inmediato si el rival estÃ¡ cerca
+      // Daño inmediato si el rival está cerca
       if(Math.abs(E.x-P.x)<120){
         E.hp=Math.max(0,E.hp-50);
         shake=25;
@@ -490,7 +490,7 @@ function doSpecial(){
       snd('fire');
       shake=14;
       specFlash('#ff8800',0.14);
-      // 1 botella grande muy visible con mucho daÃ±o
+      // 1 botella grande muy visible con mucho daño
       specProjs.push({x:P.x+P.face*20,y:G-120,vx:P.face*520,vy:-20,
         type:'whisky',t:0,life:1.8,dmg:90,_big:true});
       // 2 botellas secundarias
@@ -500,17 +500,17 @@ function doSpecial(){
       }
       break;
     }
-    case 3:{ // SANTI (me=3): LLAMADA Y MISIL RÃPIDO â abanico de facturas
+    case 3:{ // SANTI (me=3): LLAMADA Y MISIL RÁPIDO — abanico de facturas
       snd('missile');
       shake=12;
       specFlash('#00ffff',0.14);
-      // Abanico de 8 billetes con mÃ¡s daÃ±o
+      // Abanico de 8 billetes con más daño
       for(let i=0;i<8;i++){
         const ang=(i/8)*Math.PI*0.7-Math.PI*0.35;
         specProjs.push({x:P.x+P.face*30,y:G-110,vx:P.face*480*Math.cos(ang),vy:-280*Math.sin(ang)-120,
           type:'bill',t:0,life:2.2,dmg:35});
       }
-      // DespuÃ©s de 0.4s: congelar enemigo
+      // Después de 0.4s: congelar enemigo
       const _enemySanti=E;setTimeout(()=>{if(_enemySanti&&_enemySanti.st!='ko'){_enemySanti._stunned=true;_enemySanti._stunnedT=1.0;_enemySanti._stunnedFlash=0;setS(_enemySanti,'hit');}},400);
       break;
     }
@@ -518,13 +518,13 @@ function doSpecial(){
       snd('fatbar');
       shake=16;
       specFlash('#ffd700',0.16);
-      // 14 billetes lluvia desde lo alto, mucho daÃ±o acumulado
+      // 14 billetes lluvia desde lo alto, mucho daño acumulado
       for(let i=0;i<14;i++){
         specProjs.push({x:120+Math.random()*660,y:G-220-Math.random()*120,
           vx:(Math.random()-.5)*160,vy:160+Math.random()*140,
           type:'bill',t:Math.random()*0.3,life:2.5,dmg:28});
       }
-      // Congelar despuÃ©s de 0.5s
+      // Congelar después de 0.5s
       const _enemyVaz=E;setTimeout(()=>{if(_enemyVaz&&_enemyVaz.st!='ko'){_enemyVaz._stunned=true;_enemyVaz._stunnedT=1.1;_enemyVaz._stunnedFlash=0;setS(_enemyVaz,'hit');}},500);
       break;
     }
@@ -621,12 +621,12 @@ function drawSpecProjs(){
         ctx.beginPath();ctx.ellipse(0,0,8*sz,20*sz,0,0,Math.PI*2);ctx.fill();
       }
       ctx.shadowBlur=0;
-      // trail de fuego mÃ¡s grande para botella grande
+      // trail de fuego más grande para botella grande
       ctx.globalAlpha=p._big?0.7:0.4;ctx.fillStyle='#ff6600';
       ctx.beginPath();ctx.ellipse(-p.vx*DT*4,-p.vy*DT*4,p._big?18:5,p._big?36:12,Math.atan2(p.vy,p.vx),0,Math.PI*2);ctx.fill();
       ctx.globalAlpha=1;
     } else if(p.type=='bill'){
-      // Billete verde mÃ¡s visible
+      // Billete verde más visible
       ctx.fillStyle='#1aab30';ctx.strokeStyle='#ffd700';ctx.lineWidth=1.5;
       ctx.fillRect(p.x-18,p.y-9,36,18);ctx.strokeRect(p.x-18,p.y-9,36,18);
       ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';
@@ -641,7 +641,7 @@ function drawSpecProjs(){
       ctx.strokeStyle=`rgba(255,180,255,${a*0.6})`;
       ctx.lineWidth=3;
       ctx.beginPath();ctx.arc(p.x,p.y,p.r*0.6,0,Math.PI*2);ctx.stroke();
-      // Onda pequeÃ±a interior
+      // Onda pequeña interior
       ctx.strokeStyle=`rgba(255,255,255,${a*0.3})`;
       ctx.lineWidth=2;
       ctx.beginPath();ctx.arc(p.x,p.y,p.r*0.3,0,Math.PI*2);ctx.stroke();
@@ -649,12 +649,12 @@ function drawSpecProjs(){
       if(p.t<0.5){
         ctx.font='bold 20px sans-serif';ctx.fillStyle=`rgba(255,0,200,${a})`;
         ctx.textAlign='center';
-        ctx.fillText('Â¡Â¡AAAAAHHH!!',p.x,p.y-p.r-14);
+        ctx.fillText('¡¡AAAAAHHH!!',p.x,p.y-p.r-14);
         ctx.font='bold 14px sans-serif';ctx.fillStyle=`rgba(255,200,255,${a*0.7})`;
-        ctx.fillText('ð¥ GRITO MORTAL ð¥',p.x,p.y-p.r-30);
+        ctx.fillText('💥 GRITO MORTAL 💥',p.x,p.y-p.r-30);
       }
     } else if(p.type=='horse'||p.type=='horse_img'){
-      // Horse pixel art GIF â grande, pies en el suelo
+      // Horse pixel art GIF — grande, pies en el suelo
       const hw=280,hh=196;
       ctx.save();
       if(p.face<0||p.vx<0){ctx.scale(-1,1);ctx.drawImage(FAT_IMGS.horse_img,-(p.x+hw/2),p.y-hh,hw,hh);}
@@ -695,11 +695,11 @@ function upd(f,o,I){
     f.vx=0;
     phys(f);return; // early return: personaje bloqueando
   }
-  // Soltar guardia inmediatamente cuando se suelta el botÃ³n
+  // Soltar guardia inmediatamente cuando se suelta el botón
   if(f.st=='guard'){setS(f,'idle');}
   if(f.st=='idle'||f.st=='walk'||f.st=='crouch'){
     // Jump and attack can happen simultaneously
-    if(I.u&&f._jumps<2){ // mÃ¡ximo doble salto
+    if(I.u&&f._jumps<2){ // máximo doble salto
       setS(f,'jump');f.vy=-720;f.vx=mv*200*f.sp;f._jumps=(f._jumps||0)+1;
     }
     if((I.p||I.k)&&f.st!='atk'){setS(f,'atk');f.type=I.k?'k':'p';f.idx=0;}
@@ -730,7 +730,7 @@ function ai(f,o,L){
   // Aggression: scales with L and fight index
   const aggr=Math.min(0.55+L*0.09+fi*0.07,0.95);
 
-  // Use special when ready â high priority
+  // Use special when ready — high priority
   if(specReadyE&&f===E&&f._aiMode!='special'){
     if(Math.random()<0.08+0.12*L){
       f._aiMode='special';f._aiModeT=0.4;
@@ -773,7 +773,7 @@ function ai(f,o,L){
       f._aiMode='guard';f._aiModeT=0.15+Math.random()*0.2;
     }
     else{
-      // FIGHT: default â close in and attack relentlessly
+      // FIGHT: default — close in and attack relentlessly
       f._aiMode='fight';
       if(d>240){
         f.plan=r<0.85?'a':'j';
@@ -828,11 +828,11 @@ function doFatality(){
   fatElapsed=0;fatSeqIdx=0;fatHitCount=0;
   const actor=fatByEnemy?E:P;   // quien hace el fatality
   const victim=fatByEnemy?P:E;  // quien lo recibe
-  const ci=fatByEnemy?E._ci:me; // Ã­ndice del personaje que actÃºa
+  const ci=fatByEnemy?E._ci:me; // índice del personaje que actúa
 
-  // Bajar vÃ­ctima al piso si estaba en el aire
+  // Bajar víctima al piso si estaba en el aire
   victim.y=0;victim.vy=0;victim.vx=0;victim.air=false;
-  // Marear a la vÃ­ctima
+  // Marear a la víctima
   victim._dizzy=true;victim._dizzyT=0;
   setS(victim,'idle');
   snd('dizzy');
@@ -840,7 +840,7 @@ function doFatality(){
   // D.c order: [0=LINO-O, 1=ESGAY, 2=CARTER, 3=SANTI, 4=VAZQUEZ]
   // me = chi = i<4 ? i+1 : 0  =>  me=1=ESGAY, me=2=CARTER, me=3=SANTI, me=4=VAZQUEZ, me=0=LINO-O
   switch(ci){
-    case 1: { // ESGAY (me=1) â brutality: corre y pega 10 golpes rÃ¡pidos seguidos
+    case 1: { // ESGAY (me=1) — brutality: corre y pega 10 golpes rápidos seguidos
       fatSeq=[
         {t:0.1, a:'run'},
         {t:0.5, a:'hit'},{t:0.65,a:'kick'},{t:0.8, a:'hit'},
@@ -850,7 +850,7 @@ function doFatality(){
       ];
       break;
     }
-    case 2: { // CARTER (me=2) â se aleja, arroja botella+puro â fuego consume vÃ­ctima
+    case 2: { // CARTER (me=2) — se aleja, arroja botella+puro → fuego consume víctima
       snd('whisky');
       fatSeq=[
         {t:0.0, a:'back_off'},
@@ -868,7 +868,7 @@ function doFatality(){
         t:0,delay:1.4,life:1.6,type:'whisky',col:'#cc8800',size:150,
         _hits:false,_big:true
       });
-      // Puro grande volando despuÃ©s
+      // Puro grande volando después
       const pvx=actor.face>0 ? (victim.x-actor.x)/22 : (victim.x-actor.x)/22;
       fatParticles.push({
         x:actor.x+(actor.face>0?50:-50),y:G+actor.y-85,
@@ -876,7 +876,7 @@ function doFatality(){
         t:0,delay:2.1,life:1.2,type:'puro',col:'#ff4400',size:80,
         _hits:false
       });
-      // Fuego GRANDE que cubre toda la vÃ­ctima desde la base (delay 3.0s)
+      // Fuego GRANDE que cubre toda la víctima desde la base (delay 3.0s)
       for(let i=0;i<12;i++){
         fatParticles.push({
           x:victim.x+(Math.random()-0.5)*60,y:G+victim.y+5,
@@ -887,7 +887,7 @@ function doFatality(){
       }
       break;
     }
-    case 3: { // SANTI (me=3) â se aleja, llama, misil cae sobre oponente, gran explosiÃ³n GIF
+    case 3: { // SANTI (me=3) — se aleja, llama, misil cae sobre oponente, gran explosión GIF
       snd('missile');
       fatSeq=[
         {t:0.0, a:'back_off'},
@@ -895,12 +895,12 @@ function doFatality(){
         {t:2.2, a:'explosion_impact'},
         {t:4.0, a:'pose'},
       ];
-      // Misil cae desde arriba directo sobre la vÃ­ctima â desaparece al tocar base
+      // Misil cae desde arriba directo sobre la víctima — desaparece al tocar base
       fatParticles.push({x:victim.x,y:-150,vx:0,vy:6,t:0,delay:1.0,life:3.5,
         type:'missile',col:'#888',size:44,_hideOnImpact:true});
       break;
     }
-    case 4: { // VAZQUEZ (me=4) â lluvia de billetes + bolsazo aplasta y oponente desaparece
+    case 4: { // VAZQUEZ (me=4) — lluvia de billetes + bolsazo aplasta y oponente desaparece
       fatSeq=[
         {t:0.0, a:'back_off'},
         {t:0.8, a:'pose'},
@@ -930,7 +930,7 @@ function doFatality(){
       }
       break;
     }
-    case 0: { // LINO-O (me=0) â salta y sale de escena, helicÃ³ptero llega y se estrella
+    case 0: { // LINO-O (me=0) — salta y sale de escena, helicóptero llega y se estrella
       snd('heli');
       // Actor jump-exits first (hides himself), then heli crashes on victim
       const heliFromRight = actor.x < victim.x; // heli comes from same side actor exits
@@ -1074,7 +1074,7 @@ function updateFatSeq(){
         });
       }
     } else if(ev.a==='phone_pose'){
-      // SANTI llama por telÃ©fono â pose idle con "telÃ©fono"
+      // SANTI llama por teléfono — pose idle con "teléfono"
       actor.face=actor.x<victim.x?1:-1;
       setS(actor,'idle');
     } else if(ev.a==='fire_start'){
@@ -1126,13 +1126,13 @@ function updateFatParticles(){
       p.rot+=0.05;
     } else if(p.type=='moneybag'){
       if(!p._boom){p.y+=p.vy;p.vy+=0.3;}
-      // Al llegar a la base se queda ahÃ­ y aplasta
+      // Al llegar a la base se queda ahí y aplasta
       if(!p._boom&&p.y>=G-p.size*0.4){
         p._boom=true;p.vy=0;p.vx=0;p._squash=true;
         p.y=G-p.size*0.15; // queda en la base
         snd('ko');shake=22;
         setS(victim,'ko');
-        // Ocultar vÃ­ctima â aplastada bajo la bolsa
+        // Ocultar víctima — aplastada bajo la bolsa
         victim._fatHidden=true;
         // Sacudida extra de pantalla
         setTimeout(()=>{shake=Math.max(shake,15);},80);
@@ -1144,8 +1144,8 @@ function updateFatParticles(){
         p._boom=true;p._hidden=true; // misil desaparece
         snd('ko');shake=24;
         setS(victim,'ko');
-        victim._fatHidden=true; // oponente desaparece con la explosiÃ³n
-        // ExplosiÃ³n GIF GRANDE en la base
+        victim._fatHidden=true; // oponente desaparece con la explosión
+        // Explosión GIF GRANDE en la base
         fatParticles.push({x:victim.x,y:G-80,vx:0,vy:0,t:0,life:3.0,type:'explosion_gif',col:'#ff4400',size:220});
         fatParticles.push({x:victim.x,y:G-60,vx:0,vy:0,t:0,life:0.45,type:'flash',col:'#ffffff',size:380});
         for(let i=0;i<35;i++){
@@ -1177,12 +1177,12 @@ function updateFatParticles(){
         p._boom=true;p._hidden=true;snd('hit');
       }
     } else if(p.type=='fire'){
-      // Fuego estÃ¡tico sobre la vÃ­ctima â oscilaciÃ³n vertical ligera
+      // Fuego estático sobre la víctima — oscilación vertical ligera
       p.y=G+victim.y+5+Math.sin(relT*(p.flicker||6))*4;
-      // Oculta vÃ­ctima cuando el fuego estÃ¡ activo
+      // Oculta víctima cuando el fuego está activo
       if(!victim._fatHidden) victim._fatHidden=true;
     } else if(p.type=='flash'){
-      // Static flash â no movement
+      // Static flash — no movement
     } else {
       p.x+=p.vx;p.y+=p.vy;p.vy+=0.4;
     }
@@ -1193,7 +1193,7 @@ function drawFatParticles(){
   fatParticles.forEach(p=>{
     const relT=p.t-(p.delay||0);
     if(relT<0)return;
-    if(p._hidden)return; // ocultar partÃ­cula tras impacto
+    if(p._hidden)return; // ocultar partícula tras impacto
     const alpha=Math.max(0,1-relT/p.life);
     ctx.globalAlpha=alpha;
 
@@ -1202,9 +1202,9 @@ function drawFatParticles(){
       ctx.fillStyle='#1a5c1a';ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
       ctx.fillStyle=p.col;ctx.fillRect(-p.size/2+2,-p.size/4+2,p.size-4,p.size/2-4);
       ctx.fillStyle='#FFD700';ctx.font='9px sans-serif';ctx.textAlign='center';
-      ctx.fillText('â²',0,3);ctx.restore();
+      ctx.fillText('₲',0,3);ctx.restore();
     } else if(p.type=='moneybag'){
-      // Bolsa de dinero â imagen real
+      // Bolsa de dinero — imagen real
       ctx.save();ctx.translate(p.x,p.y);
       if(p._squash){ctx.scale(1.8,0.35);} // aplastada al impactar
       const mbW=p.size*1.4,mbH=p.size*1.6;
@@ -1212,11 +1212,11 @@ function drawFatParticles(){
         ctx.drawImage(FAT_IMGS.moneybag,-mbW/2,-mbH/2,mbW,mbH);
       } else {
         ctx.fillStyle='#8B7355';ctx.beginPath();ctx.arc(0,0,p.size,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#FFD700';ctx.font='bold 22px sans-serif';ctx.textAlign='center';ctx.fillText('â²',0,8);
+        ctx.fillStyle='#FFD700';ctx.font='bold 22px sans-serif';ctx.textAlign='center';ctx.fillText('₲',0,8);
       }
       ctx.restore();
     } else if(p.type=='heli'){
-      // HelicÃ³ptero â imagen real
+      // Helicóptero — imagen real
       ctx.save();ctx.translate(p.x,p.y);
       // flip horizontal when moving left
       if(p.vx<0){ctx.scale(-1,1);}
@@ -1268,11 +1268,11 @@ function drawFatParticles(){
       }
       ctx.restore();
     } else if(p.type=='missile'){
-      // Misil â imagen real. La punta estÃ¡ ABAJO en la imagen original => dibujar sin rotaciÃ³n
+      // Misil — imagen real. La punta está ABAJO en la imagen original => dibujar sin rotación
       ctx.save();ctx.translate(p.x,p.y);
       const mw=p.size*1.1,mh=p.size*2.6;
       if(FAT_IMGS.missile&&FAT_IMGS.missile.complete){
-        // Dibujar imagen tal cual â punta ya apunta abajo
+        // Dibujar imagen tal cual — punta ya apunta abajo
         ctx.drawImage(FAT_IMGS.missile,-mw/2,-mh/2,mw,mh);
         // Llama del motor sale de la parte SUPERIOR (escudo/motor arriba en la imagen)
         ctx.globalAlpha=0.85+Math.random()*0.15;
@@ -1286,7 +1286,7 @@ function drawFatParticles(){
         ctx.fillStyle='#cc3300';
         ctx.beginPath();ctx.moveTo(0,mh/2+16);ctx.lineTo(-8,mh/2);ctx.lineTo(8,mh/2);ctx.closePath();ctx.fill();
         ctx.fillStyle='#fff';ctx.font='bold 13px serif';ctx.textAlign='center';
-        ctx.fillText('â¡',0,4);
+        ctx.fillText('✡',0,4);
         ctx.globalAlpha=0.85;ctx.fillStyle='rgba(255,140,0,0.9)';
         ctx.beginPath();ctx.ellipse(0,-mh/2-10,9,20,0,0,Math.PI*2);ctx.fill();
       }
@@ -1297,9 +1297,9 @@ function drawFatParticles(){
       ctx.beginPath();ctx.moveTo(p.x,p.y-p.size);ctx.quadraticCurveTo(p.x+20,p.y-p.size-20,p.x+15,p.y-p.size-35);ctx.stroke();
       ctx.fillStyle='#ff0';ctx.beginPath();ctx.arc(p.x+15,p.y-p.size-35,5+Math.sin(p.t*20)*3,0,Math.PI*2);ctx.fill();
       ctx.fillStyle='#4169E1';ctx.font='bold '+(p.size*0.9)+'px serif';
-      ctx.textAlign='center';ctx.fillText('â¡',p.x,p.y+p.size*0.35);
+      ctx.textAlign='center';ctx.fillText('✡',p.x,p.y+p.size*0.35);
     } else if(p.type=='explosion'||p.type=='explosion_gif'){
-      // ExplosiÃ³n â imagen real GIF animada (explosion_gif usa boom GIF mÃ¡s grande)
+      // Explosión — imagen real GIF animada (explosion_gif usa boom GIF más grande)
       const gifImg = p.type=='explosion_gif' ? (FAT_IMGS.boom||FAT_IMGS.explosion) : FAT_IMGS.explosion;
       if(gifImg&&gifImg.complete){
         const scale = p.type=='explosion_gif' ? (1+relT/p.life*0.5) : (1-relT/p.life*0.3);
@@ -1313,8 +1313,8 @@ function drawFatParticles(){
         ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();
       }
     } else if(p.type=='fire'){
-      // Fuego â GIF real, grande, arranca desde la BASE y sube
-      // p.y ya estÃ¡ fijado en G+victim.y+5 (base del piso)
+      // Fuego — GIF real, grande, arranca desde la BASE y sube
+      // p.y ya está fijado en G+victim.y+5 (base del piso)
       if(FAT_IMGS.fire&&FAT_IMGS.fire.complete){
         const grow=Math.min(1,relT/0.5); // crece los primeros 0.5s
         const fw=p.size*3.2*grow,fh=p.size*2.8*grow;
@@ -1338,12 +1338,12 @@ function drawFatParticles(){
       g2.addColorStop(1,'rgba(255,255,200,0)');
       ctx.fillStyle=g2;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();
     } else if(p.type==='puro'){
-      // Puro â imagen real GRANDE, rotado en la direcciÃ³n de vuelo
+      // Puro — imagen real GRANDE, rotado en la dirección de vuelo
       ctx.save();ctx.translate(p.x,p.y);
       const ang=Math.atan2(p.vy,p.vx);
       ctx.rotate(ang);
       if(FAT_IMGS.cigar&&FAT_IMGS.cigar.complete){
-        // Imagen original es horizontal (ancho > alto) â la dibujamos a lo largo del eje de movimiento
+        // Imagen original es horizontal (ancho > alto) — la dibujamos a lo largo del eje de movimiento
         const pw=p.size*2.4,ph=p.size*0.9;
         ctx.drawImage(FAT_IMGS.cigar,-pw*0.5,-ph/2,pw,ph);
       } else {
@@ -1355,7 +1355,7 @@ function drawFatParticles(){
       // Botella de whisky GRANDE volando y girando
       ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.t*2.5);
       if(FAT_IMGS.whisky&&FAT_IMGS.whisky.complete){
-        // Botella: mÃ¡s alta que ancha
+        // Botella: más alta que ancha
         const bw=p.size*0.9,bh=p.size*2.2;
         ctx.drawImage(FAT_IMGS.whisky,-bw/2,-bh/2,bw,bh);
       } else {
@@ -1389,7 +1389,7 @@ function finRound(){
   const isFatRound=(winner=='P'&&roundWinsP>=2)||(winner=='E'&&roundWinsE>=2);
   if(winner=='P'){
     // Esgay sale volando al perder
-    const dir=P.x<E.x?1:-1; // E vuela en direcciÃ³n opuesta al jugador
+    const dir=P.x<E.x?1:-1; // E vuela en dirección opuesta al jugador
     E.vx=dir*320; E.vy=-550; E.air=true;
     E._koFlight=true; E._koFat=isFatRound;
     setS(E,'ko');setS(P,'win');msg='K.O.';
@@ -1402,26 +1402,26 @@ function finRound(){
 
   shake=18;snd('ko');
 
-  // Best-of-3: fatality SOLO cuando alguien ya tiene 2 victorias (ganÃ³ el match)
+  // Best-of-3: fatality SOLO cuando alguien ya tiene 2 victorias (ganó el match)
   if(winner=='P'&&roundWinsP>=2){
-    // Jugador ganÃ³ el MATCH (2 victorias) â fatality del jugador
+    // Jugador ganó el MATCH (2 victorias) — fatality del jugador
     // Esperar a que el vuelo KO termine antes de activar fatready
     fatByEnemy=false;
     fatPhase=0;fatBar=0;fatActive=true;fatTimer=4.5;
-    sc='fatready';mt=1.5; // dar tiempo al vuelo dramÃ¡tico
+    sc='fatready';mt=1.5; // dar tiempo al vuelo dramático
   } else if(winner=='P'){
-    // Jugador ganÃ³ este round pero no el match todavÃ­a
+    // Jugador ganó este round pero no el match todavía
     round++;
     sc='roundend';mt=2.5;
   } else if(winner=='E'&&roundWinsE>=2){
-    // Enemigo ganÃ³ el MATCH (2 victorias) â IA hace fatality
+    // Enemigo ganó el MATCH (2 victorias) — IA hace fatality
     fatByEnemy=true;
     fatPhase=0;fatBar=100;fatActive=true;fatTimer=0;
     fatElapsed=0;fatSeq=[];fatSeqIdx=0;fatHitCount=0;fatParticles=[];
     setS(P,'ko');setS(E,'win');
-    sc='fatready';mt=1.5; // dar tiempo al vuelo dramÃ¡tico
+    sc='fatready';mt=1.5; // dar tiempo al vuelo dramático
   } else if(winner=='E'){
-    // Enemigo ganÃ³ este round pero no el match todavÃ­a
+    // Enemigo ganó este round pero no el match todavía
     round++;
     sc='roundend';mt=2.5;
   } else {
@@ -1433,17 +1433,17 @@ function finRound(){
 
 // Called after fatality animation to check if fight continues
 function afterFatality(){
-  // Limpiar estado de mareo y stun PERO NO _fatHidden â la vÃ­ctima debe seguir invisible
+  // Limpiar estado de mareo y stun PERO NO _fatHidden — la víctima debe seguir invisible
   if(P){P._dizzy=false;P._dizzyT=0;P._stunned=false;P._stunnedT=0;}
   if(E){E._dizzy=false;E._dizzyT=0;E._stunned=false;E._stunnedT=0;}
   if(fatByEnemy){
-    // IA ganÃ³ el combate â jugador pierde
+    // IA ganó el combate — jugador pierde
     fatByEnemy=false;
     sc='lose';mt=2;
     return;
   }
   if(roundWinsP>=2){
-    // Jugador ganÃ³ el match â avanzar al siguiente enemigo
+    // Jugador ganó el match — avanzar al siguiente enemigo
     playerScore+=10000;
     fi++;
     if(fi>=foes.length){
@@ -1495,7 +1495,7 @@ function step(){
       P=_P;E=_E;me=_me; // restaurar
       specReady=_specReady;specBar=_specBar;
       specReadyE=false;specBarE=0; // consumir barra del enemigo
-      // Marcar todos los nuevos proyectiles como "del enemigo" â deben golpear al jugador (P)
+      // Marcar todos los nuevos proyectiles como "del enemigo" — deben golpear al jugador (P)
       for(let _i=prevLen;_i<specProjs.length;_i++){specProjs[_i]._fromEnemy=true;}
     }
     upd(E,P,aiI);
@@ -1508,7 +1508,7 @@ function step(){
     // Keep fighters apart
     const dd=Math.abs(P.x-E.x);
     if(dd<80&&P.y>=0&&E.y>=0){const s=(80-dd)/2*(P.x<E.x?1:-1);P.x-=s;E.x+=s;}
-    // specBar: baja lentamente si no estÃ¡s golpeando
+    // specBar: baja lentamente si no estás golpeando
     if(!specReady&&specBar>0){specBar=Math.max(0,specBar-6*DT);}
     if(!specReadyE&&specBarE>0){specBarE=Math.max(0,specBarE-4*DT);}
     if(tm<=0){if(P.hp>=E.hp)E.hp=0;else P.hp=0;}
@@ -1521,9 +1521,9 @@ function step(){
     // KO flight physics in fatready state too
     if(P&&P.st=='ko'&&(P._koFlight||P.air))phys(P);
     if(E&&E.st=='ko'&&(E._koFlight||E.air))phys(E);
-    // Don't call upd() here â HP is 0, would re-trigger finRound
+    // Don't call upd() here — HP is 0, would re-trigger finRound
     if(fatByEnemy){
-      // IA hace el fatality automÃ¡ticamente tras breve pausa
+      // IA hace el fatality automáticamente tras breve pausa
       if(mt<=0){doFatality();sc='fatality';mt=5.0;}
     } else {
       if(T.fat){
@@ -1534,7 +1534,7 @@ function step(){
       fatTimer-=DT;
       if(fatBar>=100){doFatality();sc='fatality';mt=5.0;}
       else if(fatTimer<=0){
-        // Time expired â skip fatality, advance
+        // Time expired — skip fatality, advance
         afterFatality();
       }
     }
@@ -1665,7 +1665,7 @@ function drawFatBar(){
 
   if(blink){
     ctx.font='9px "Press Start 2P",monospace';ctx.textAlign='center';
-    ctx.fillStyle='#FFD700';ctx.fillText('Â¡PRESIONA RÃPIDO! â FATALITY',450,y-30);
+    ctx.fillStyle='#FFD700';ctx.fillText('¡PRESIONA RÁPIDO! — FATALITY',450,y-30);
   }
   // Timer bar (shrinking)
   const tPct=Math.max(0,fatTimer/4.5);
@@ -1691,7 +1691,7 @@ function drawRanking(){
     ctx.fillStyle='rgba(255,255,255,'+(0.3+Math.sin(bl*2+i)*0.3)+')';
     ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
   }
-  tx('Â¡VICTORIA TOTAL!',450,55,22,'#FFD700');
+  tx('¡VICTORIA TOTAL!',450,55,22,'#FFD700');
   tx('JEFE FINAL DERROTADO',450,85,11,'#ff6');
 
   // Player score big
@@ -1704,7 +1704,7 @@ function drawRanking(){
   ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(200,170,500,60);
   ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(200,170,500,60);
   tx('INGRESA TU NOMBRE:',450,195,9,'#ffd400');
-  const displayName=(rankNameInput||'_')+(Math.floor(bl*2)%2?'â':'');
+  const displayName=(rankNameInput||'_')+(Math.floor(bl*2)%2?'█':'');
   tx(displayName,450,218,14,'#fff');
 
   // Buttons
@@ -1730,7 +1730,7 @@ function drawRanking(){
   });
 
   // Keyboard hint
-  if(Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE â¢ ENTER=GUARDAR â¢ ESPACIO=CONTINUAR',450,440,7,'#555');
+  if(Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',450,440,7,'#555');
 }
 
 function drawTitleScores(){
@@ -1748,7 +1748,7 @@ function draw(){
   cv.width=LW;cv.height=LH;
   ctx.clearRect(0,0,LW,LH);
 
-  imgs=countImgs(); // recount every frame â base64 images may load synchronously
+  imgs=countImgs(); // recount every frame — base64 images may load synchronously
   if(imgs<need){
     ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,LW,LH);
     // Title
@@ -1790,7 +1790,7 @@ function draw(){
     tx('FIGHTERS',450,162,42,'#ff3b3b');
     if(Math.floor(bl*2)%2)tx('TOCA PARA COMENZAR',450,235,12,'#fff');
     // Show boss unlocked hint
-    if(bossUnlocked)tx('â LINO-O DESBLOQUEADO â',450,262,9,'#ff4444');
+    if(bossUnlocked)tx('★ LINO-O DESBLOQUEADO ★',450,262,9,'#ff4444');
     drawTitleScores();
   }
   else if(sc=='select'){
@@ -1805,7 +1805,7 @@ function draw(){
         const chi=i<4?i+1:0;
         if(imgReady(D.c[chi].P))ctx.drawImage(D.c[chi].P,cx,105,150,150);
         tx(D.c[chi].n,cx+75,282,9,'#fff');
-        // No difficulty stars â all equal, order determines difficulty
+        // No difficulty stars — all equal, order determines difficulty
       } else {
         ctx.fillStyle='#111';ctx.fillRect(cx,105,150,150);
         ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(cx,105,150,150);
@@ -1813,15 +1813,15 @@ function draw(){
       }
       ctx.strokeStyle=isLocked?'#333':'#ffd400';ctx.lineWidth=3;ctx.strokeRect(cx-3,100,158,215);
     }
-    tx('Â¡DERROTA A TODOS Y AL JEFE FINAL!',450,345,9,'#aaa');
+    tx('¡DERROTA A TODOS Y AL JEFE FINAL!',450,345,9,'#aaa');
     if(playerScore>0)tx('PUNTAJE: '+playerScore.toLocaleString(),450,368,8,'#2ecc40');
   }
   else if(sc=='win'){
     spr(P.c,'win',350,0,1);
     spr(D.c[0],'hurt',650,0,-1);
-    tx('Â¡VICTORIA TOTAL!',450,80,24,'#FFD700');
-    tx('Â¡JEFE FINAL DERROTADO!',450,118,12,'#ff6');
-    tx('â LINO-O DESBLOQUEADO COMO LUCHADOR â',450,145,8,'#ff4444');
+    tx('¡VICTORIA TOTAL!',450,80,24,'#FFD700');
+    tx('¡JEFE FINAL DERROTADO!',450,118,12,'#ff6');
+    tx('★ LINO-O DESBLOQUEADO COMO LUCHADOR ★',450,145,8,'#ff4444');
     if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,180,11,'#fff');
   }
   else if(sc=='lose'){
@@ -1836,21 +1836,21 @@ function draw(){
   else{
     // Fight scenes
     [P,E].forEach(f=>{
-      // Efecto "mareado" â el personaje oscila antes del fatality
+      // Efecto "mareado" — el personaje oscila antes del fatality
       let dx=0;
       if(f._dizzy){
         f._dizzyT=(f._dizzyT||0)+DT;
         dx=Math.sin(f._dizzyT*8)*6*(1/(1+f._dizzyT*0.3));
       }
-      // Hide if _fatHidden â durante fatality Y en fatend (vÃ­ctima sigue invisible)
+      // Hide if _fatHidden — durante fatality Y en fatend (víctima sigue invisible)
       if(!((sc=='fatality'||sc=='fatend'||sc=='roundend'||sc=='end')&&f._fatHidden)){
-        // Efecto stun: parpadeo elÃ©ctrico amarillo/blanco
+        // Efecto stun: parpadeo eléctrico amarillo/blanco
         if(f._stunned){
           const flicker=Math.sin((f._stunnedFlash||0)*40)>0;
           if(flicker){
             ctx.save();
             ctx.globalAlpha=0.6;
-            // Destello elÃ©ctrico azul/blanco alrededor del personaje
+            // Destello eléctrico azul/blanco alrededor del personaje
             const ex=f.x,ey=G+f.y-120;
             const grad=ctx.createRadialGradient(ex,ey,0,ex,ey,80);
             grad.addColorStop(0,'rgba(100,200,255,0.5)');
@@ -1862,7 +1862,7 @@ function draw(){
           }
         }
         spr(f.c,fname(f),f.x+dx,f.y,f.face);
-        // SuperposiciÃ³n elÃ©ctrica sobre el sprite stunned
+        // Superposición eléctrica sobre el sprite stunned
         if(f._stunned&&Math.sin((f._stunnedFlash||0)*30)>0.3){
           ctx.save();
           ctx.globalAlpha=0.35;
@@ -1871,7 +1871,7 @@ function draw(){
           ctx.beginPath();ctx.ellipse(ex,ey,50,100,0,0,Math.PI*2);ctx.fill();
           ctx.globalAlpha=1;
           ctx.restore();
-          // RelÃ¡mpago pequeÃ±o
+          // Relámpago pequeño
           ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.globalAlpha=0.7;
           ctx.beginPath();
           ctx.moveTo(f.x-10,G+f.y-200);ctx.lineTo(f.x+5,G+f.y-160);
@@ -1884,17 +1884,17 @@ function draw(){
         ctx.save();ctx.textAlign='center';
         ctx.font='bold 11px sans-serif';
         ctx.fillStyle='#00aaff';
-        ctx.fillText('â¡STUNNEDâ¡',f.x,G+f.y-215);
+        ctx.fillText('⚡STUNNED⚡',f.x,G+f.y-215);
         ctx.restore();
       }
-      // Pajaritos de estrellitas encima si estÃ¡ mareado
+      // Pajaritos de estrellitas encima si está mareado
       if(f._dizzy&&(f._dizzyPermanent||f._dizzyT<3)){
         const nx=3;
         for(let i=0;i<nx;i++){
           const ang=(f._dizzyT*4+i*Math.PI*2/nx);
           const sx=f.x+Math.cos(ang)*30,sy=G+f.y-180+Math.sin(ang*2)*10-20;
           ctx.font='16px serif';ctx.textAlign='center';
-          ctx.fillText(i%2==0?'â':'â¦',sx,sy);
+          ctx.fillText(i%2==0?'★':'✦',sx,sy);
         }
       }
     });
@@ -1921,15 +1921,15 @@ function draw(){
     }
     ctx.strokeStyle=specReady?'#ff00ff':'#5500aa';ctx.lineWidth=1;ctx.strokeRect(sl-1,48,sw+2,10);
     ctx.font='7px "Press Start 2P",monospace';ctx.textAlign='left';
-    ctx.fillStyle=specReady?'#ff00ff':'#9955cc';ctx.fillText('â¡ESPECIAL',sl,45);
-    // BotÃ³n grande pulsante cuando estÃ¡ listo
+    ctx.fillStyle=specReady?'#ff00ff':'#9955cc';ctx.fillText('⚡ESPECIAL',sl,45);
+    // Botón grande pulsante cuando está listo
     if(specReady){
       const pulse=0.85+Math.sin(Date.now()/125)*0.15;
       const bw=160*pulse,bh=40*pulse,bx=LW/2-bw/2,by=LH-70-bh/2;
       ctx.save();
       // Sombra/glow
       ctx.shadowColor='#ff00ff';ctx.shadowBlur=20*pulse;
-      // Fondo del botÃ³n
+      // Fondo del botón
       const bg=ctx.createLinearGradient(bx,by,bx,by+bh);
       bg.addColorStop(0,'#cc00ff');bg.addColorStop(1,'#6600aa');
       ctx.fillStyle=bg;
@@ -1946,7 +1946,7 @@ function draw(){
       ctx.fillStyle='#ffffff';
       ctx.font=`bold ${14*pulse}px "Press Start 2P",monospace`;
       ctx.textAlign='center';
-      ctx.fillText('â¡ ESPECIAL â¡',LW/2,by+bh*0.65);
+      ctx.fillText('⚡ ESPECIAL ⚡',LW/2,by+bh*0.65);
       ctx.restore();
     }
     }
@@ -1969,7 +1969,7 @@ function draw(){
     if(sc=='intro'){
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,80,900,120);
       tx(msg,450,145,20,E.c===D.c[0]?'#ff4':'#ffd400');
-      if(mt<.8)tx('Â¡PELEA!',450,195,30,'#f33');
+      if(mt<.8)tx('¡PELEA!',450,195,30,'#f33');
     }
     if(sc=='end'||sc=='roundend'){
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,130,900,100);
@@ -1979,39 +1979,39 @@ function draw(){
     if(sc=='fatready'){
       ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,70,900,120);
       if(fatByEnemy){
-        tx('Â¡FATALITY!',450,110,36,'#ff0000');
-        tx('Â¡PREPÃRATE!',450,152,18,'#ff4400');
+        tx('¡FATALITY!',450,110,36,'#ff0000');
+        tx('¡PREPÁRATE!',450,152,18,'#ff4400');
       } else {
-        tx('Â¡FINISH HIM!',450,110,30,'#ff0000');
-        tx('Â¡PRESIONA FATALITY!',450,152,16,'#ff4400');
+        tx('¡FINISH HIM!',450,110,30,'#ff0000');
+        tx('¡PRESIONA FATALITY!',450,152,16,'#ff4400');
         drawFatBar();
       }
     }
     if(sc=='fatality'){
       const actorIdx=fatByEnemy?E._ci:me;
       if(actorIdx===1){
-        // ESGAY/BRUTALITY â sin overlay, pelea visible
+        // ESGAY/BRUTALITY — sin overlay, pelea visible
         ctx.globalAlpha=0.12+Math.abs(Math.sin(bl*12))*0.08;
         ctx.fillStyle='#ff0000';ctx.fillRect(0,0,900,450);
         ctx.globalAlpha=1;
-        tx('Â¡BRUTALITY!',450,95,28,'#ff0000');
+        tx('¡BRUTALITY!',450,95,28,'#ff0000');
         if(fatHitCount>0){
           ctx.font='bold 32px "Press Start 2P",monospace';ctx.textAlign='center';
           ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText(fatHitCount+'x HIT',452,138);
           ctx.fillStyle='#FFD700';ctx.fillText(fatHitCount+'x HIT',450,136);
         }
       } else {
-        // Resto de fatalities â overlay + tÃ­tulo
+        // Resto de fatalities — overlay + título
         ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,0,900,450);
-        const fatNames={0:'Â¡KAMIKAZE!',2:'Â¡INFERNO!',3:'Â¡BOMBARDEO!',4:'Â¡AVALANCHA!'};
-        const fatTitle=fatNames[actorIdx]||'Â¡FATALITY!';
+        const fatNames={0:'¡KAMIKAZE!',2:'¡INFERNO!',3:'¡BOMBARDEO!',4:'¡AVALANCHA!'};
+        const fatTitle=fatNames[actorIdx]||'¡FATALITY!';
         tx(fatTitle,450,105,actorIdx===4?16:26,'#ff0000');
         ctx.globalAlpha=0.25+Math.abs(Math.sin(bl*6))*0.15;
         ctx.fillStyle='#ff0000';ctx.fillRect(0,0,900,450);
         ctx.globalAlpha=1;
       }
     }
-    // Fatality particles â se dibujan sobre el overlay
+    // Fatality particles — se dibujan sobre el overlay
     if(sc=='fatality'||sc=='fatend')drawFatParticles();
 
     if(sc=='fatend'){
@@ -2019,7 +2019,7 @@ function draw(){
       if(fatByEnemy){
         tx('HUMILLADO',450,180,32,'#ff0000');
       } else {
-        tx('Â¡PERFECTO!',450,180,34,'#FFD700');
+        tx('¡PERFECTO!',450,180,34,'#FFD700');
         tx('+10,000 PUNTOS',450,220,11,'#2ecc40');
       }
     }
@@ -2089,7 +2089,7 @@ cv.addEventListener('pointerdown',e=>{
   if(sc=='ranking'){
     // Check button clicks
     if(x>480&&x<680&&y>250&&y<295){
-      // CONTINUE FIGHTING â keep score, go to select
+      // CONTINUE FIGHTING — keep score, go to select
       sc='select';stopBgMusic();
     } else if(x>220&&x<420&&y>250&&y<295&&rankNameInput.length>0){
       // SAVE
@@ -2103,35 +2103,69 @@ cv.addEventListener('pointerdown',e=>{
   if(sc=='fatready'){T.fat=1;}
 });
 
-// Touch buttons — multi-touch: cada dedo tracked por pointerId
-// Cada botón puede tener N dedos encima al mismo tiempo
-document.querySelectorAll('.b').forEach(b=>{
-  const k=b.dataset.k;
-  const atk=k=='p'||k=='k'||k=='sp'||k=='u';
-  const activePointers=new Set();
-  const press=e=>{
+// Touch buttons — Touch Events nativos para multi-touch real
+// Mapa global: touchId -> key activa (para detectar slide entre botones)
+const _touchMap={};
+function _getBtnAt(x,y){
+  const els=document.elementsFromPoint(x,y);
+  for(const el of els)if(el.dataset&&el.dataset.k)return el;
+  return null;
+}
+document.addEventListener('touchstart',e=>{
+  for(const t of e.changedTouches){
+    const b=_getBtnAt(t.clientX,t.clientY);
+    if(!b)continue;
     e.preventDefault();
-    e.stopPropagation();
-    // No capturar: deja que pointerenter/leave funcionen para slide entre botones
-    try{b.releasePointerCapture(e.pointerId);}catch(_){}
-    if(activePointers.has(e.pointerId))return;
-    activePointers.add(e.pointerId);
+    const k=b.dataset.k;
+    const atk=k=='p'||k=='k'||k=='sp'||k=='u';
+    _touchMap[t.identifier]={k,atk,b};
     b.classList.add('on');
-    if(sc=='fatready'){T.fat=1;return;}
+    if(sc=='fatready'){T.fat=1;continue;}
     if(atk)T[k]=1;else K[k]=1;
-  };
-  const release=e=>{
-    activePointers.delete(e.pointerId);
-    if(activePointers.size===0){
-      b.classList.remove('on');
-      if(!atk)K[k]=0;
+  }
+},{passive:false});
+document.addEventListener('touchmove',e=>{
+  for(const t of e.changedTouches){
+    const prev=_touchMap[t.identifier];
+    const b=_getBtnAt(t.clientX,t.clientY);
+    const newK=b?b.dataset.k:null;
+    // Salió de un botón
+    if(prev&&(!b||newK!==prev.k)){
+      prev.b.classList.remove('on');
+      if(!prev.atk)K[prev.k]=0;
+      delete _touchMap[t.identifier];
     }
-  };
-  b.addEventListener('pointerdown',press,{passive:false});
-  // slide: si el dedo se mueve encima del botón activa
-  b.addEventListener('pointerenter',e=>{if(e.buttons>0)press(e);},{passive:false});
-  ['pointerup','pointercancel','pointerleave'].forEach(n=>b.addEventListener(n,release,{passive:false}));
-});
+    // Entró a un botón nuevo
+    if(b&&(!prev||newK!==prev.k)){
+      e.preventDefault();
+      const k=b.dataset.k;
+      const atk=k=='p'||k=='k'||k=='sp'||k=='u';
+      _touchMap[t.identifier]={k,atk,b};
+      b.classList.add('on');
+      if(sc=='fatready'){T.fat=1;continue;}
+      if(atk)T[k]=1;else K[k]=1;
+    }
+  }
+},{passive:false});
+document.addEventListener('touchend',e=>{
+  for(const t of e.changedTouches){
+    const prev=_touchMap[t.identifier];
+    if(!prev)continue;
+    e.preventDefault();
+    prev.b.classList.remove('on');
+    if(!prev.atk)K[prev.k]=0;
+    delete _touchMap[t.identifier];
+  }
+},{passive:false});
+document.addEventListener('touchcancel',e=>{
+  for(const t of e.changedTouches){
+    const prev=_touchMap[t.identifier];
+    if(!prev)continue;
+    prev.b.classList.remove('on');
+    if(!prev.atk)K[prev.k]=0;
+    delete _touchMap[t.identifier];
+  }
+},{passive:false});
 
 // Keyboard
 const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'u',w:'u',
