@@ -371,7 +371,8 @@ let playerName='';
 let savedScores=[];
 let rankFromSplash=false;
 try{
-  bossUnlocked=localStorage.getItem('sf_boss')==='1';
+  // bossUnlocked solo persiste en sesión — hay que ganarlo cada vez
+  // bossUnlocked=localStorage.getItem('sf_boss')==='1';
   savedScores=JSON.parse(localStorage.getItem('sf_scores')||'[]');
 }catch(e){}
 
@@ -974,35 +975,35 @@ function doFatality(){
       snd('heli');
       // Actor jump-exits first (hides himself), then heli crashes on victim
       const heliFromRight = actor.x < victim.x; // heli comes from same side actor exits
-      const heliStartX = heliFromRight ? LW+120 : -120;
-      const heliVX = heliFromRight ? -5.5 : 5.5;
+      const heliStartX = heliFromRight ? LW+200 : -200;
+      const heliVX = heliFromRight ? -3.2 : 3.2;
       fatSeq=[
         {t:0.0, a:'back_off'},
         {t:0.4, a:'jump_exit'},
-        {t:2.2, a:'explosion_impact'},
-        {t:3.2, a:'pose'},
+        {t:3.5, a:'explosion_impact'},
+        {t:5.0, a:'pose'},
       ];
       // Helicopter image flies in from edge toward victim
       fatParticles.push({
-        x:heliStartX,y:80,vx:heliVX,vy:1.8,
-        t:0,delay:0.8,life:6,type:'heli_img',
-        col:'#cc0000',size:160,rot:0,
+        x:heliStartX,y:60,vx:heliVX,vy:1.0,
+        t:0,delay:0.8,life:8,type:'heli_img',
+        col:'#cc0000',size:240,rot:0,
         _targetX:victim.x,_targetY:G+victim.y-80,_dead:false
       });
       // Explosion GIF at impact point
       fatParticles.push({
         x:victim.x,y:G+victim.y-80,vx:0,vy:0,
-        t:0,delay:2.1,life:2.5,type:'explosion_real',
-        col:'#ff8800',size:220
+        t:0,delay:2.1,life:3.0,type:'explosion_gif',
+        col:'#ff8800',size:320
       });
       // Flash at impact
-      fatParticles.push({x:victim.x,y:G+victim.y-100,vx:0,vy:0,t:0,delay:2.1,life:0.4,type:'flash',col:'#ffffff',size:260});
+      fatParticles.push({x:victim.x,y:G+victim.y-100,vx:0,vy:0,t:0,delay:3.4,life:0.5,type:'flash',col:'#ffffff',size:340});
       // Debris
       for(let i=0;i<30;i++){
         fatParticles.push({
           x:victim.x+(Math.random()-0.5)*30,y:G+victim.y-70,
           vx:(Math.random()-0.5)*10,vy:-Math.random()*8-2,
-          t:0,delay:2.15,life:2.0,type:'blood',col:'#cc0000',size:5+Math.random()*10
+          t:0,delay:3.45,life:2.0,type:'blood',col:'#cc0000',size:5+Math.random()*10
         });
       }
       break;
@@ -1019,7 +1020,7 @@ function doFatality(){
       }
     }
   }
-  fatPhase=2;fatTimer=5.0;
+  fatPhase=2;fatTimer=7.0;
   snd('fatality');
 }
 
@@ -1145,15 +1146,15 @@ function updateFatParticles(){
       }
     } else if(p.type=='heli_img'){
       // Real helicopter GIF image flying toward victim
-      if(relT>0.3){
+      if(relT>0.4){
         const tx=p._targetX||victim.x,ty=(p._targetY)||(G+victim.y-80);
-        p.vx+=(tx-p.x)*0.015;
-        p.vy+=(ty-p.y)*0.015;
+        p.vx+=(tx-p.x)*0.008;
+        p.vy+=(ty-p.y)*0.008;
       }
       p.x+=p.vx;p.y+=p.vy;
       // Crash when near victim base
       const tx=p._targetX||victim.x,ty=(p._targetY)||(G+victim.y-80);
-      if(!p._boom&&Math.abs(p.x-tx)<90&&Math.abs(p.y-ty)<90){
+      if(!p._boom&&Math.abs(p.x-tx)<110&&Math.abs(p.y-ty)<110){
         p._boom=true;p._dead=true;
         snd('ko');shake=24;
         victim._fatHidden=true;
@@ -1489,8 +1490,7 @@ function afterFatality(){
     if(fi>=foes.length){
       const defeatedBoss=foes.includes(0);
       if(defeatedBoss){
-        bossUnlocked=true;
-        try{localStorage.setItem('sf_boss','1');}catch(e){}
+        bossUnlocked=true; // solo en sesión, no localStorage
         goToRanking();
       } else {
         sc='win';mt=1;
@@ -1564,7 +1564,7 @@ function step(){
     // Don't call upd() here — HP is 0, would re-trigger finRound
     if(fatByEnemy){
       // IA hace el fatality automáticamente tras breve pausa
-      if(mt<=0){doFatality();sc='fatality';mt=5.0;}
+      if(mt<=0){doFatality();sc='fatality';mt=7.0;}
     } else {
       if(T.fat){
         fatBar=Math.min(100,fatBar+7);
@@ -1572,7 +1572,7 @@ function step(){
         T.fat=0;
       }
       fatTimer-=DT;
-      if(fatBar>=100){doFatality();sc='fatality';mt=5.0;}
+      if(fatBar>=100){doFatality();sc='fatality';mt=7.0;}
       else if(fatTimer<=0){
         // Time expired — skip fatality, advance
         afterFatality();
@@ -1595,7 +1595,7 @@ function step(){
         // Should have been handled through fatready, but fallback
         playerScore+=10000;fi++;
         if(fi>=foes.length){
-          if(foes.includes(0)){bossUnlocked=true;try{localStorage.setItem('sf_boss','1');}catch(e){}goToRanking();}
+          if(foes.includes(0)){bossUnlocked=true;goToRanking();}
           else{sc='win';mt=1;}
         } else {round=1;roundWinsP=0;roundWinsE=0;startRound();}
       } else {sc='lose';mt=1;}
