@@ -9,8 +9,8 @@
 html,body{margin:0;padding:0;width:100vw;height:100vh;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;font-family:'Press Start 2P',monospace;color:#fff}
 html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 
-/* Canvas — full screen, sin barras */
-#c{position:fixed;top:0;left:0;image-rendering:pixelated;}
+/* Canvas — letterbox, centrado */
+#c{position:fixed;background:#000;image-rendering:pixelated;}
 
 /* Pantalla de inicio */
 #splash{position:fixed;inset:0;background:#0a0a1a;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px}
@@ -20,130 +20,52 @@ html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 #splash .rot-hint{font-size:9px;color:#ffd400;line-height:2}
 #splash button{margin-top:8px;padding:16px 32px;font-family:'Press Start 2P',monospace;font-size:12px;background:#ff3b3b;color:#fff;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation}
 
-/* UI overlay — cubre toda la pantalla */
+/* Botones — PORTRAIT: zona inferior */
 #ui{position:fixed;inset:0;pointer-events:none;display:none}
 body.f #ui{display:block}
 
-/* === D-PAD BASE — fondo circular decorativo === */
-#dpad-bg{
-  position:absolute;pointer-events:none;border-radius:50%;
-  background:radial-gradient(circle,rgba(60,60,80,.55) 0%,rgba(20,20,30,.7) 100%);
-  border:2px solid rgba(255,255,255,.12);
-  box-shadow:0 0 18px rgba(0,0,0,.7) inset,0 2px 8px rgba(0,0,0,.5);
-  z-index:0;
-}
-/* Cruz interna decorativa del dpad */
-#dpad-bg::before,#dpad-bg::after{
-  content:'';position:absolute;background:rgba(255,255,255,.06);border-radius:4px;
-}
-#dpad-bg::before{left:33%;right:33%;top:0;bottom:0;}
-#dpad-bg::after{top:33%;bottom:33%;left:0;right:0;}
+/* Botones base */
+.b{position:absolute;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;opacity:.82;border:2px solid rgba(0,0,0,.55);box-shadow:0 3px 0 rgba(0,0,0,.5);color:#fff;text-shadow:0 1px #000;font-family:'Press Start 2P',monospace}
+.b.on{opacity:1;transform:translateY(2px);box-shadow:none}
 
-/* === BOTONES BASE === */
-.b{
-  position:absolute;pointer-events:auto;touch-action:none;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;font-family:'Press Start 2P',monospace;
-  transition:opacity .08s,transform .08s;z-index:1;
-}
-.b.on{opacity:1!important;transform:scale(.92)!important;filter:brightness(1.4);}
-
-/* === D-PAD — flechas con forma triangular === */
-.d{
-  opacity:.85;border:none;background:transparent;
-}
-/* Triángulos con clip-path — cada flecha apunta en su dirección */
-#btn-u{clip-path:polygon(50% 8%,92% 88%,8% 88%);background:rgba(220,220,255,.22);}
-#btn-d{clip-path:polygon(50% 92%,8% 12%,92% 12%);background:rgba(220,220,255,.22);}
-#btn-l{clip-path:polygon(8% 50%,88% 8%,88% 92%);background:rgba(220,220,255,.22);}
-#btn-r{clip-path:polygon(92% 50%,12% 92%,12% 8%);background:rgba(220,220,255,.22);}
-.d:active,.d.on{background:rgba(255,255,255,.55)!important;}
-
-/* Diagonales — zonas invisibles en las esquinas */
-.dg{opacity:0;background:transparent;border:none;border-radius:0;}
-
-/* === BOTONES DE ACCION — estilo consola === */
-.r{
-  border-radius:50%;
-  box-shadow:0 4px 0 rgba(0,0,0,.55),0 0 0 2px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.25);
-  font-size:1.6vmin;
-  line-height:1.2;
-  flex-direction:column;gap:1px;
-  opacity:.9;
-  border:none;
-}
-.r .ico{font-size:2.4vmin;line-height:1}
-.r .lbl{font-size:1.1vmin;opacity:.85}
-
-#btn-p{background:radial-gradient(circle at 40% 35%,#ff6666,#bb1111);color:#fff;}
-#btn-k{background:radial-gradient(circle at 40% 35%,#ffe066,#b88000);color:#fff;}
-#btn-g{background:radial-gradient(circle at 40% 35%,#5599ff,#1133aa);color:#fff;}
-#btn-sp{
-  background:radial-gradient(circle at 40% 35%,#cc55ff,#660099);color:#fff;
-  display:none;animation:specpulse .6s infinite alternate;
-}
-body.spec #btn-sp{display:flex}
-@keyframes specpulse{
-  from{box-shadow:0 4px 0 rgba(0,0,0,.55),0 0 10px #aa00ff88;}
-  to{box-shadow:0 4px 0 rgba(0,0,0,.55),0 0 24px #cc00ff,0 0 40px #8800ccaa;}
-}
-
-/* FATALITY */
-#fat-btn{
-  display:none;border-radius:12px;
-  background:linear-gradient(135deg,#8b0000,#ff2200);
-  border:2px solid #ff6600;white-space:nowrap;
-  box-shadow:0 4px 0 #550000,0 0 16px #ff000066;
-  font-size:1.4vmin;opacity:.95;
-}
+/* Tamaños landscape */
+.d{border-radius:8px;background:#333;}
+.r{border-radius:50%;}
+#fat-btn{display:none;border-radius:8px;background:linear-gradient(135deg,#8b0000,#ff0000);border:2px solid #ff6600;white-space:nowrap}
 body.fat #fat-btn{display:flex}
+#btn-sp{display:none;animation:specpulse 0.6s infinite alternate}
+body.spec #btn-sp{display:flex}
+@keyframes specpulse{from{box-shadow:0 0 8px #cc00ff}to{box-shadow:0 0 20px #cc00ff,0 0 40px #8800cc}}
 
-/* === LANDSCAPE === */
+/* LANDSCAPE — botones en costados, juego llena pantalla */
 @media (orientation:landscape){
-  #dpad-bg{left:1.5vmin;bottom:1.5vmin;width:40vmin;height:40vmin;}
-  .d{width:13vmin;height:13vmin;font-size:5.5vmin}
-  .dg{width:10vmin;height:10vmin;}
-  .r{width:14vmin;height:14vmin;}
-  #fat-btn{width:18vmin;height:7vmin;font-size:1.3vmin}
-  /* D-pad cross layout */
-  #btn-u{left:15.5vmin;bottom:29.5vmin}
-  #btn-l{left:1.5vmin;bottom:15.5vmin}
-  #btn-r{left:29.5vmin;bottom:15.5vmin}
-  #btn-d{left:15.5vmin;bottom:1.5vmin}
-  /* Diagonales en las esquinas */
-  #btn-ul{left:3vmin;bottom:28vmin}
-  #btn-ur{left:28vmin;bottom:28vmin}
-  #btn-dl{left:3vmin;bottom:3vmin}
-  #btn-dr{left:28vmin;bottom:3vmin}
-  /* Botones accion — layout diamante tipo PlayStation */
-  #btn-g{right:15.5vmin;bottom:29vmin}
-  #btn-p{right:1.5vmin;bottom:15.5vmin}
-  #btn-k{right:15.5vmin;bottom:2vmin}
-  #btn-sp{right:29vmin;bottom:15.5vmin}
+  .d{width:12vmin;height:12vmin;font-size:5vmin}
+  .r{width:13vmin;height:13vmin;font-size:1.8vmin}
+  #fat-btn{width:16vmin;height:6vmin;font-size:1.3vmin}
+  #btn-u{left:15vmin;bottom:28vmin}
+  #btn-l{left:2vmin;bottom:14vmin}
+  #btn-r{left:28vmin;bottom:14vmin}
+  #btn-d{left:15vmin;bottom:1vmin}
+  #btn-p{right:26vmin;bottom:4vmin}
+  #btn-k{right:13vmin;bottom:17vmin}
+  #btn-g{right:1vmin;bottom:30vmin}
+  #btn-sp{right:1vmin;bottom:17vmin}
   #fat-btn{left:50%;transform:translateX(-50%);bottom:1vmin}
 }
 
-/* === PORTRAIT === */
+/* PORTRAIT — botones en zona inferior, 2 filas compactas */
 @media (orientation:portrait){
-  #dpad-bg{left:1.5vw;bottom:1.5vw;width:50vw;height:50vw;}
-  .d{width:16vw;height:16vw;font-size:7vw}
-  .dg{width:12vw;height:12vw;}
-  .r{width:17vw;height:17vw;font-size:2.4vw}
-  .r .ico{font-size:4vw}
-  .r .lbl{font-size:1.6vw}
-  #fat-btn{width:38vw;height:9vw;font-size:2.2vw}
-  #btn-u{left:18vw;bottom:35vw}
-  #btn-l{left:1.5vw;bottom:18vw}
-  #btn-r{left:36vw;bottom:18vw}
-  #btn-d{left:18vw;bottom:1.5vw}
-  #btn-ul{left:4vw;bottom:33vw}
-  #btn-ur{left:34vw;bottom:33vw}
-  #btn-dl{left:4vw;bottom:3.5vw}
-  #btn-dr{left:34vw;bottom:3.5vw}
-  #btn-g{right:18vw;bottom:35vw}
-  #btn-p{right:2vw;bottom:18vw}
-  #btn-k{right:18vw;bottom:1.5vw}
-  #btn-sp{right:36vw;bottom:18vw}
+  .d{width:14vw;height:14vw;font-size:5vw}
+  .r{width:16vw;height:16vw;font-size:1.8vw}
+  #fat-btn{width:36vw;height:9vw;font-size:2vw}
+  #btn-u{left:18vw;bottom:28vw}
+  #btn-l{left:2vw;bottom:14vw}
+  #btn-r{left:34vw;bottom:14vw}
+  #btn-d{left:18vw;bottom:0vw}
+  #btn-p{right:36vw;bottom:5vw}
+  #btn-k{right:18vw;bottom:19vw}
+  #btn-g{right:2vw;bottom:5vw}
+  #btn-sp{right:20vw;bottom:5vw}
   #fat-btn{left:50%;transform:translateX(-50%);bottom:0}
 }
 </style></head><body>
@@ -157,41 +79,18 @@ body.fat #fat-btn{display:flex}
   <button id="btn-start" ontouchend="startGame(event)">▶ INICIAR</button>
   <button id="btn-ranking-splash" ontouchend="showRankingFromSplash(event)" style="margin-top:4px;padding:12px 28px;font-family:'Press Start 2P',monospace;font-size:10px;background:#0a0a3a;color:#ffd400;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation">🏆 RANKING</button>
 </div>
-<!-- Overlay de nombre para ranking — visible y tappable en móvil -->
-<div id="rank-overlay" style="display:none;position:fixed;inset:0;z-index:30;pointer-events:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding-top:28vh">
-  <!-- Wrapper con pointer-events:auto para iOS Safari -->
-  <div style="pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:10px;
-    background:rgba(0,0,30,0.88);border:2px solid #ffd40055;border-radius:12px;padding:20px 24px">
-    <div style="font-family:'Press Start 2P',monospace;font-size:9px;color:#ffd400;text-shadow:0 0 8px #ffd400">INGRESÁ TU NOMBRE</div>
-    <input type="text" id="rank-input" maxlength="10"
-      autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
-      placeholder="▶ TOCA AQUÍ ◀"
-      style="font-family:'Press Start 2P',monospace;font-size:18px;
-      text-align:center;text-transform:uppercase;letter-spacing:3px;
-      background:rgba(0,0,20,0.95);color:#fff;
-      border:3px solid #ffd400;border-radius:6px;
-      padding:14px 18px;width:260px;max-width:70vw;
-      outline:none;caret-color:#ffd400;box-shadow:0 0 16px #ffd40088;
-      -webkit-appearance:none;font-size:16px">
-    <div style="font-family:'Press Start 2P',monospace;font-size:7px;color:#888">MÁX 10 CARACTERES</div>
-  </div>
-</div>
+<input type="text" id="rank-input" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" style="position:fixed;opacity:0;pointer-events:none;left:50%;top:60%;width:1px;height:1px;z-index:999;font-size:16px">
 
 <canvas id="c"></canvas>
 <div id="ui">
-  <div id="dpad-bg"></div>
-  <div class="b d" id="btn-u" data-k="u"></div>
-  <div class="b d" id="btn-l" data-k="l"></div>
-  <div class="b d" id="btn-r" data-k="r"></div>
-  <div class="b d" id="btn-d" data-k="d"></div>
-  <div class="b dg" id="btn-ul" data-k="u" data-k2="l"></div>
-  <div class="b dg" id="btn-ur" data-k="u" data-k2="r"></div>
-  <div class="b dg" id="btn-dl" data-k="d" data-k2="l"></div>
-  <div class="b dg" id="btn-dr" data-k="d" data-k2="r"></div>
-  <div class="b r" id="btn-p" data-k="p"><span class="ico">👊</span><span class="lbl">PUÑO</span></div>
-  <div class="b r" id="btn-k" data-k="k"><span class="ico">🦵</span><span class="lbl">PATADA</span></div>
-  <div class="b r" id="btn-g" data-k="g"><span class="ico">🛡️</span><span class="lbl">DEF</span></div>
-  <div class="b r" id="btn-sp" data-k="sp"><span class="ico">⚡</span><span class="lbl">ESP</span></div>
+  <div class="b d" id="btn-u" data-k="u">▲</div>
+  <div class="b d" id="btn-l" data-k="l">◀</div>
+  <div class="b d" id="btn-r" data-k="r">▶</div>
+  <div class="b d" id="btn-d" data-k="d">▼</div>
+  <div class="b r" id="btn-p" data-k="p" style="background:#d22">PUÑO</div>
+  <div class="b r" id="btn-k" data-k="k" style="background:#e8b800">PATADA</div>
+  <div class="b r" id="btn-g" data-k="g" style="background:#26c">DEFENSA</div>
+  <div class="b r" id="btn-sp" data-k="sp" style="background:#8800cc">⚡ESPECIAL</div>
   <div class="b" id="fat-btn" data-k="fat">💀 FATALITY</div>
 </div>
 <script>
@@ -227,8 +126,7 @@ const D={"ah":214,"c":[{"n":"LINO-O","img":"assets/images/lino-o_sprite.png","po
 
 
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
-const LH=450,G=370,DT=1/60,ROUND_TIME=120,MAX_ROUNDS=2;
-let LW=Math.round(LH*(screen.width/screen.height));
+const LW=900,LH=450,G=370,DT=1/60,ROUND_TIME=120,MAX_ROUNDS=2;
 cv.width=LW;cv.height=LH;
 
 // === AUDIO ===
@@ -400,17 +298,10 @@ function saveScoreEntry(){
 function goToRanking(){
   sc='ranking';mt=0;rankFromSplash=false;
   rankNameInput=playerName||'';
-  // Mostrar overlay solo si aún no tiene nombre (necesita escribirlo)
-  if(!playerName){
-    const ov=document.getElementById('rank-overlay');
+  setTimeout(()=>{
     const inp=document.getElementById('rank-input');
-    if(ov){ov.style.display='flex';}
     if(inp){inp.value=rankNameInput;inp.focus();}
-  }
-}
-function _hideRankOverlay(){
-  const ov=document.getElementById('rank-overlay');
-  if(ov)ov.style.display='none';
+  },200);
 }
 
 
@@ -487,12 +378,14 @@ try{
 
 // === FIT / RESIZE ===
 function fit(){
-  // Adaptar LW al aspect ratio real de la pantalla — sin barras negras
-  LW=Math.round(LH*(innerWidth/innerHeight));
   cv.width=LW;cv.height=LH;
-  cv.style.width=innerWidth+'px';
-  cv.style.height=innerHeight+'px';
-  cv.style.left='0';cv.style.top='0';
+  cv.style.position='fixed';
+  // Letterbox: scale to fit keeping aspect ratio
+  const scale=Math.min(innerWidth/LW,innerHeight/LH);
+  const w=Math.floor(LW*scale),h=Math.floor(LH*scale);
+  cv.style.width=w+'px';cv.style.height=h+'px';
+  cv.style.left=Math.floor((innerWidth-w)/2)+'px';
+  cv.style.top=Math.floor((innerHeight-h)/2)+'px';
 }
 fit();
 window.addEventListener('resize',fit);
@@ -535,7 +428,7 @@ function phys(f){
   } else {
     f.vy+=1600*DT;f.air=true;
   }
-  f.x=Math.max(Math.round(LW*0.067),Math.min(Math.round(LW*0.933),f.x+f.vx*DT));
+  f.x=Math.max(60,Math.min(840,f.x+f.vx*DT));
   if(f.st!='walk'&&f.st!='jump')f.vx*=.65;
   f.t+=DT;
 }
@@ -616,8 +509,6 @@ function doSpecial(){
   specReady=false;specBar=0;
   specProjs=[];
   const ci=me; // character index del jugador
-  const _specAttacker=P; // quien lanza (referencia estable para closures)
-  const _specTarget=E;   // quien recibe (referencia estable para closures)
   setS(P,'atk');
   snd('punch');
   // D.c order: [0=LINO-O, 1=ESGAY, 2=CARTER, 3=SANTI, 4=VAZQUEZ]
@@ -627,12 +518,12 @@ function doSpecial(){
       shake=20;
       specFlash('#ff88ff',0.18);
       // Onda expansiva grande que crece desde Esgay hacia el enemigo
-      specProjs.push({x:P.x,y:G-100,vx:P.face*280,vy:0,type:'scream',t:0,life:1.5,dmg:80,r:0,_ownerP:_specAttacker});
-      // Daño inmediato al ENEMIGO si está cerca (nunca al atacante)
-      if(_specTarget&&_specTarget.st!='ko'&&Math.abs(_specTarget.x-P.x)<120){
-        _specTarget.hp=Math.max(0,_specTarget.hp-50);
+      specProjs.push({x:P.x,y:G-100,vx:P.face*280,vy:0,type:'scream',t:0,life:1.5,dmg:80,r:0});
+      // Daño inmediato si el rival está cerca
+      if(Math.abs(E.x-P.x)<120){
+        E.hp=Math.max(0,E.hp-50);
         shake=25;
-        _specTarget._stunned=true;_specTarget._stunnedT=1.1;_specTarget._stunnedFlash=0;setS(_specTarget,'hit');
+        E._stunned=true;E._stunnedT=1.1;E._stunnedFlash=0;setS(E,'hit');
       }
       break;
     }
@@ -642,11 +533,11 @@ function doSpecial(){
       specFlash('#ff8800',0.14);
       // 1 botella grande muy visible con mucho daño
       specProjs.push({x:P.x+P.face*20,y:G-120,vx:P.face*520,vy:-20,
-        type:'whisky',t:0,life:1.8,dmg:90,_big:true,_ownerP:_specAttacker});
+        type:'whisky',t:0,life:1.8,dmg:90,_big:true});
       // 2 botellas secundarias
       for(let i=0;i<2;i++){
         specProjs.push({x:P.x+P.face*20,y:G-80-i*35,vx:P.face*440+i*40,vy:-40+i*25,
-          type:'whisky',t:0,life:1.6,dmg:35,_ownerP:_specAttacker});
+          type:'whisky',t:0,life:1.6,dmg:35});
       }
       break;
     }
@@ -658,10 +549,10 @@ function doSpecial(){
       for(let i=0;i<8;i++){
         const ang=(i/8)*Math.PI*0.7-Math.PI*0.35;
         specProjs.push({x:P.x+P.face*30,y:G-110,vx:P.face*480*Math.cos(ang),vy:-280*Math.sin(ang)-120,
-          type:'bill',t:0,life:2.2,dmg:35,_ownerP:_specAttacker});
+          type:'bill',t:0,life:2.2,dmg:35});
       }
-      // Después de 0.4s: congelar enemigo (usar _specTarget, no E — puede haber swap de IA)
-      const _enemySanti=_specTarget;setTimeout(()=>{if(_enemySanti&&_enemySanti.st!='ko'){_enemySanti._stunned=true;_enemySanti._stunnedT=1.0;_enemySanti._stunnedFlash=0;setS(_enemySanti,'hit');}},400);
+      // Después de 0.4s: congelar enemigo
+      const _enemySanti=E;setTimeout(()=>{if(_enemySanti&&_enemySanti.st!='ko'){_enemySanti._stunned=true;_enemySanti._stunnedT=1.0;_enemySanti._stunnedFlash=0;setS(_enemySanti,'hit');}},400);
       break;
     }
     case 4:{ // VAZQUEZ (me=4): LLUVIA DE PLATA MASIVA desde arriba
@@ -672,10 +563,10 @@ function doSpecial(){
       for(let i=0;i<14;i++){
         specProjs.push({x:120+Math.random()*660,y:G-220-Math.random()*120,
           vx:(Math.random()-.5)*160,vy:160+Math.random()*140,
-          type:'bill',t:Math.random()*0.3,life:2.5,dmg:28,_ownerP:_specAttacker});
+          type:'bill',t:Math.random()*0.3,life:2.5,dmg:28});
       }
-      // Congelar después de 0.5s (usar _specTarget, no E — puede haber swap de IA)
-      const _enemyVaz=_specTarget;setTimeout(()=>{if(_enemyVaz&&_enemyVaz.st!='ko'){_enemyVaz._stunned=true;_enemyVaz._stunnedT=1.1;_enemyVaz._stunnedFlash=0;setS(_enemyVaz,'hit');}},500);
+      // Congelar después de 0.5s
+      const _enemyVaz=E;setTimeout(()=>{if(_enemyVaz&&_enemyVaz.st!='ko'){_enemyVaz._stunned=true;_enemyVaz._stunnedT=1.1;_enemyVaz._stunnedFlash=0;setS(_enemyVaz,'hit');}},500);
       break;
     }
     case 0:{ // LINO-O (me=0): CABALLO PIXELART A TODO GALOPE
@@ -684,9 +575,8 @@ function doSpecial(){
       snd('punch');
       const hDir=P.face>0?1:-1;
       specProjs.push({x:hDir>0?-80:LW+80,y:G-55,vx:hDir*700,vy:0,
-        type:'horse_img',t:0,life:2.0,dmg:140,face:hDir,_hit:false,_ownerP:P});
-      // No congelar al atacante — solo pose breve de ataque
-      setS(P,'atk');
+        type:'horse_img',t:0,life:2.0,dmg:140,face:hDir,_hit:false});
+      setS(P,'win');
       break;
     }
   }
@@ -707,12 +597,9 @@ function updateSpecProjs(){
     // flash_screen: no movement, just visual
     if(p.type=='flash_screen'){if(p.t>p.life)specProjs.splice(i,1);continue;}
     // Hit check: proyectiles del jugador golpean al enemigo; del enemigo al jugador
-    // _ownerP: referencia al atacante real (evita auto-daño)
     const _target=p._fromEnemy?P:E;
     const _stun=p._fromEnemy?(t,s)=>{if(P&&P.st!='ko'){P._stunned=true;P._stunnedT=t;setS(P,s||'hit');}}
                              :(t,s)=>{stunEnemy(t);setS(E,s||'hit');};
-    // No golpear al propio atacante
-    if(p._ownerP&&_target===p._ownerP){if(p.t>p.life)specProjs.splice(i,1);continue;}
     if(_target&&_target.st!='ko'){
       let hit=false;
       if(p.type=='scream'){
@@ -828,18 +715,13 @@ function drawSpecProjs(){
 }
 
 function upd(f,o,I){
-  // KO/win: solo aplicar física (caída) si está en el aire — nunca congelar en el aire
-  if(f.st=='ko'||f.st=='win'){
-    if(f.air||f.y<0)phys(f); // sigue cayendo hasta la base
-    return;
-  }
-  // Stun (congelado por special): no puede moverse ni atacar PERO sigue cayendo si está en el aire
+  if(f.st=='ko'||f.st=='win')return;
+  // Stun (congelado por special): no puede moverse ni atacar
   if(f._stunned){
     f._stunnedT-=DT;
     if(f._stunnedT<=0){f._stunned=false;setS(f,'idle');}
     // Efecto visual: parpadeo
     f._stunnedFlash=(f._stunnedFlash||0)+DT;
-    if(f.air||f.y<0)phys(f); // cae al suelo aunque esté stunned
     return; // no procesa input mientras stunned
   }
   strike(f,o);
@@ -962,7 +844,7 @@ function ai(f,o,L){
 
 // === ROUNDS ===
 function startRound(){
-  P=mk(me,Math.round(LW*0.31),1);E=mk(foes[fi],Math.round(LW*0.69),-1);
+  P=mk(me,280,1);E=mk(foes[fi],620,-1);
   P.sp=1;E.sp=1;
   P.hp=P.mh;E.hp=E.mh;
   tm=ROUND_TIME;sp=[];
@@ -1091,46 +973,37 @@ function doFatality(){
     }
     case 0: { // LINO-O (me=0) — salta y sale de escena, helicóptero llega y se estrella
       snd('heli');
-      // Helicóptero entra desde el borde opuesto al actor
-      // Imagen original: cockpit a la IZQUIERDA, cola a la DERECHA
-      // Si heli viene de la derecha (vx<0) → cockpit apunta izquierda = OK (sin flip)
-      // Si heli viene de la izquierda (vx>0) → hay que flipear horizontalmente
-      const heliFromRight = actor.x > victim.x; // viene por el lado contrario al actor
-      const heliStartX = heliFromRight ? LW+300 : -300;
-      const heliVX = heliFromRight ? -1.8 : 1.8; // lento
+      // Actor jump-exits first (hides himself), then heli crashes on victim
+      const heliFromRight = actor.x < victim.x; // heli comes from same side actor exits
+      const heliStartX = heliFromRight ? LW+200 : -200;
+      const heliVX = heliFromRight ? -3.2 : 3.2;
       fatSeq=[
         {t:0.0, a:'back_off'},
         {t:0.4, a:'jump_exit'},
-        {t:7.0, a:'explosion_impact'},
-        {t:8.5, a:'pose'},
+        {t:3.5, a:'explosion_impact'},
+        {t:5.0, a:'pose'},
       ];
-      // Helicóptero grande: entra desde borde, baja lento, rebota, cae sobre víctima
-      // Fases: _phase 0=cruzando, 1=bajando, 2=rebotando, 3=cayendo final
+      // Helicopter image flies in from edge toward victim
       fatParticles.push({
-        x:heliStartX, y:120,
-        vx:heliVX, vy:0.4,
-        t:0, delay:0.6, life:9,
-        type:'heli_img',
-        col:'#cc0000', size:300,
-        _targetX:victim.x, _targetY:G,
-        _dead:false, _phase:0,
-        _phaseT:0,
-        _fromRight:heliFromRight
+        x:heliStartX,y:60,vx:heliVX,vy:1.0,
+        t:0,delay:0.8,life:8,type:'heli_img',
+        col:'#cc0000',size:240,rot:0,
+        _targetX:victim.x,_targetY:G+victim.y-80,_dead:false
       });
-      // Explosión, flash y debris — delay:9999 = inactivos hasta que heli impacte
-      // Se activan en updateFatParticles cuando _boom=true via _waitBoom
+      // Explosion GIF at impact point
       fatParticles.push({
-        x:victim.x, y:G-70, vx:0, vy:0,
-        t:0, delay:9999, life:3.5,
-        type:'explosion_gif', col:'#ff8800', size:380, _waitBoom:true
+        x:victim.x,y:G+victim.y-80,vx:0,vy:0,
+        t:0,delay:2.1,life:3.0,type:'explosion_gif',
+        col:'#ff8800',size:320
       });
-      fatParticles.push({x:victim.x,y:G-50,vx:0,vy:0,t:0,delay:9999,life:0.5,type:'flash',col:'#ffffff',size:440,_waitBoom:true});
-      for(let i=0;i<35;i++){
+      // Flash at impact
+      fatParticles.push({x:victim.x,y:G+victim.y-100,vx:0,vy:0,t:0,delay:3.4,life:0.5,type:'flash',col:'#ffffff',size:340});
+      // Debris
+      for(let i=0;i<30;i++){
         fatParticles.push({
-          x:victim.x+(Math.random()-0.5)*40, y:G-20,
-          vx:(Math.random()-0.5)*14, vy:-Math.random()*10-3,
-          t:0, delay:9999, life:2.2,
-          type:'blood', col:i%3===0?'#cc0000':i%3===1?'#ff6600':'#888', size:6+Math.random()*12, _waitBoom:true
+          x:victim.x+(Math.random()-0.5)*30,y:G+victim.y-70,
+          vx:(Math.random()-0.5)*10,vy:-Math.random()*8-2,
+          t:0,delay:3.45,life:2.0,type:'blood',col:'#cc0000',size:5+Math.random()*10
         });
       }
       break;
@@ -1187,7 +1060,7 @@ function updateFatSeq(){
       // Actor retrocede lejos del rival
       actor.face=actor.x<victim.x?1:-1;
       const dist=actor.x<victim.x?-260:260;
-      actor.x=Math.max(Math.round(LW*0.067),Math.min(Math.round(LW*0.933),victim.x+dist));
+      actor.x=Math.max(60,Math.min(840,victim.x+dist));
       setS(actor,'walk');
     } else if(ev.a==='run'){
       actor.face=actor.x<victim.x?1:-1;
@@ -1272,54 +1145,36 @@ function updateFatParticles(){
         setS(victim,'ko');
       }
     } else if(p.type=='heli_img'){
-      // Helicóptero en 3 fases: 0=cruzando (vuela hacia víctima), 1=bajando lento, 2=rebote, 3=caída final
+      // Fases: 0=vuela hacia víctima a media altura, 1=baja lento, 2=rebote, 3=cae rápido
       if(!p._dead){
-        p._phaseT=(p._phaseT||0)+DT;
+        p._phase=p._phase||0; p._phaseT=(p._phaseT||0)+DT;
         const tx=p._targetX||victim.x;
-        const groundY=G-20; // base = nivel del suelo
+        const groundY=G-20;
         if(p._phase===0){
-          // Vuela hacia la posición X de la víctima a media altura
-          const dist=Math.abs(p.x-tx);
-          if(dist<80){
-            // Llegó sobre la víctima — empieza a bajar
-            p._phase=1;p._phaseT=0;
-            p.vx=0; // para horizontal
-            p.vy=1.5; // empieza a caer lento
-          } else {
-            // Avanza hacia víctima — altura estable ~90
-            p.x+=p.vx;
-            p.y+=(90-p.y)*0.05; // estabilizar altura
-          }
+          // Vuela horizontalmente hacia víctima, altura estable ~90
+          p.x+=p.vx;
+          p.y+=(90-p.y)*0.05;
+          if(Math.abs(p.x-tx)<70){p._phase=1;p._phaseT=0;p.vx=0;p.vy=0.8;}
         } else if(p._phase===1){
-          // Bajando lento hacia la base
-          p.vy=Math.min(p.vy+0.08,4.0); // aceleración suave
-          p.y+=p.vy;
-          if(p.y>=groundY){
-            // Tocó la base — rebote
-            p.y=groundY;
-            p._phase=2;p._phaseT=0;
-            p.vy=-3.5; // rebota hacia arriba
-          }
+          // Baja lento
+          p.vy=Math.min(p.vy+0.06,3.5);p.y+=p.vy;
+          if(p.y>=groundY){p.y=groundY;p._phase=2;p._phaseT=0;p.vy=-4.0;}
         } else if(p._phase===2){
-          // Rebota hacia arriba
-          p.vy+=0.18; // gravedad ligera
-          p.y+=p.vy;
-          if(p.vy>=0){
-            // Empezó a bajar de nuevo — fase caída final
-            p._phase=3;p._phaseT=0;
-          }
+          // Rebote hacia arriba
+          p.vy+=0.22;p.y+=p.vy;
+          if(p.vy>=0){p._phase=3;p._phaseT=0;p.vy=0;}
         } else if(p._phase===3){
-          // Caída final rápida sobre víctima
-          p.vy=Math.min(p.vy+0.4,12);
-          p.y+=p.vy;
+          // Caída final rápida
+          p.vy=Math.min(p.vy+0.5,15);p.y+=p.vy;
           if(p.y>=groundY&&!p._boom){
-            // IMPACTO en la base
             p._boom=true;p._dead=true;
             snd('ko');shake=30;
             victim._fatHidden=true;
             setS(victim,'ko');
-            // Activar explosión/flash/debris que esperaban el impacto
-            fatParticles.forEach(q=>{if(q._waitBoom){q.delay=0;q.t=0;q._waitBoom=false;}});
+            // Explosión aparece al impactar
+            fatParticles.push({x:p.x,y:G-70,vx:0,vy:0,t:0,delay:0,life:3.5,type:'explosion_gif',col:'#ff8800',size:380});
+            fatParticles.push({x:p.x,y:G-50,vx:0,vy:0,t:0,delay:0,life:0.5,type:'flash',col:'#ffffff',size:440});
+            for(let _i=0;_i<30;_i++){fatParticles.push({x:p.x+(Math.random()-0.5)*40,y:G-20,vx:(Math.random()-0.5)*14,vy:-Math.random()*10-3,t:0,delay:0,life:2.0,type:'blood',col:_i%3===0?'#cc0000':_i%3===1?'#ff6600':'#888',size:6+Math.random()*12});}
           }
         }
       }
@@ -1398,7 +1253,6 @@ function drawFatParticles(){
     const relT=p.t-(p.delay||0);
     if(relT<0)return;
     if(p._hidden)return; // ocultar partícula tras impacto
-    // heli_img no usa fade genérico (siempre opaco hasta _dead)
     const alpha=(p.type=='heli_img')?1:Math.max(0,1-relT/p.life);
     ctx.globalAlpha=alpha;
 
@@ -1442,23 +1296,16 @@ function drawFatParticles(){
       }
       ctx.restore();
     } else if(p.type=='heli_img'){
-      // Helicóptero grande — imagen con cockpit a la IZQUIERDA
-      // Flip si viene desde la izquierda (vx>0 o _fromRight=false) para que cockpit apunte hacia adelante
+      // Real helicopter PNG - large, flies and crashes
       if(!p._dead){
         ctx.save();ctx.translate(p.x,p.y);
-        // Cockpit izquierda en imagen original → correcto si se mueve a la izquierda (vx<0 o phase>=1)
-        // Si viene desde la izquierda (_fromRight=false), flipear para que cockpit apunte derecha
-        const needsFlip = !p._fromRight; // viene desde izquierda → flip para que morro apunte derecha
-        if(needsFlip)ctx.scale(-1,1);
-        // Inclinación leve según velocidad vertical (cae un poco de punta)
-        const tiltAngle=p._phase>=1?Math.min(p.vy*0.025,0.35):0;
-        ctx.rotate(tiltAngle*(needsFlip?-1:1));
-        const hw=p.size, hh=p.size*0.65;
+        if(p.vx<0){ctx.scale(-1,1);}
+        ctx.rotate(Math.min(Math.max(p.vy*0.03,-0.4),0.4));
+        const hw=p.size,hh=p.size*0.6;
         if(FAT_IMGS.heli_img&&FAT_IMGS.heli_img.complete){
           ctx.drawImage(FAT_IMGS.heli_img,-hw/2,-hh/2,hw,hh);
         } else {
           ctx.fillStyle='#cc0000';ctx.fillRect(-hw/2,-hh/4,hw,hh/2);
-          ctx.fillStyle='#fff';ctx.fillRect(-hw/2,-hh/4,hw/3,hh/2); // "cockpit" izquierda
         }
         ctx.restore();
       }
@@ -1710,9 +1557,9 @@ function step(){
       for(let _i=prevLen;_i<specProjs.length;_i++){specProjs[_i]._fromEnemy=true;}
     }
     upd(E,P,aiI);
-    // KO physics: siempre actualizar personajes ko para que caigan y animen correctamente
-    if(P.st=='ko')phys(P);
-    if(E.st=='ko')phys(E);
+    // KO flight physics: aplicar phys a personajes ko que siguen volando
+    if(P.st=='ko'&&(P._koFlight||P.air))phys(P);
+    if(E.st=='ko'&&(E._koFlight||E.air))phys(E);
     // Auto-facing: ambos siempre miran al rival (excepto KO/win)
     if(P.st!='ko'&&P.st!='win'){P.face=P.x<E.x?1:-1;}
     if(E.st!='ko'&&E.st!='win'){E.face=E.x<P.x?1:-1;}
@@ -1729,9 +1576,9 @@ function step(){
     if(mt<=0){startRound();}
   }
   else if(sc=='fatready'){
-    // KO physics in fatready state too
-    if(P&&P.st=='ko')phys(P);
-    if(E&&E.st=='ko')phys(E);
+    // KO flight physics in fatready state too
+    if(P&&P.st=='ko'&&(P._koFlight||P.air))phys(P);
+    if(E&&E.st=='ko'&&(E._koFlight||E.air))phys(E);
     // Don't call upd() here — HP is 0, would re-trigger finRound
     if(fatByEnemy){
       // IA hace el fatality automáticamente tras breve pausa
@@ -1876,7 +1723,7 @@ function drawFatBar(){
 
   if(blink){
     ctx.font='9px "Press Start 2P",monospace';ctx.textAlign='center';
-    ctx.fillStyle='#FFD700';ctx.fillText('¡PRESIONA RÁPIDO! — FATALITY',LW/2,y-30);
+    ctx.fillStyle='#FFD700';ctx.fillText('¡PRESIONA RÁPIDO! — FATALITY',450,y-30);
   }
   // Timer bar (shrinking)
   const tPct=Math.max(0,fatTimer/4.5);
@@ -1905,10 +1752,10 @@ function drawRanking(){
 
   if(rankFromSplash){
     // Modo solo visualización desde el splash
-    tx('🏆 RANKING',LW/2,60,20,'#FFD700');
-    tx('- MEJORES PUNTAJES -',LW/2,100,9,'#ffd400');
+    tx('🏆 RANKING',450,60,20,'#FFD700');
+    tx('- MEJORES PUNTAJES -',450,100,9,'#ffd400');
     const topScores=savedScores.slice(0,8);
-    if(topScores.length===0){tx('(Sin puntajes aún)',LW/2,200,9,'#555');}
+    if(topScores.length===0){tx('(Sin puntajes aún)',450,200,9,'#555');}
     topScores.forEach((s,i)=>{
       const col=i==0?'#FFD700':i==1?'#C0C0C0':i==2?'#CD7F32':'#aaa';
       const medal=['🥇','🥈','🥉',''][Math.min(i,3)];
@@ -1918,31 +1765,31 @@ function drawRanking(){
     // Volver button
     ctx.fillStyle='#2a1a0a';ctx.fillRect(300,395,300,40);
     ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(300,395,300,40);
-    tx('◀ VOLVER',LW/2,421,11,'#ffd400');
+    tx('◀ VOLVER',450,421,11,'#ffd400');
     return;
   }
 
-  tx('¡VICTORIA TOTAL!',LW/2,42,20,'#FFD700');
-  tx('JEFE FINAL DERROTADO',LW/2,68,10,'#ff6');
+  tx('¡VICTORIA TOTAL!',450,42,20,'#FFD700');
+  tx('JEFE FINAL DERROTADO',450,68,10,'#ff6');
 
   // Player score big
   ctx.font='26px "Press Start 2P",monospace';ctx.textAlign='center';
   ctx.fillStyle='#000';ctx.fillText(playerScore.toLocaleString(),452,105);
-  ctx.fillStyle='#2ecc40';ctx.fillText(playerScore.toLocaleString(),LW/2,103);
-  tx('PUNTOS',LW/2,124,9,'#aaa');
+  ctx.fillStyle='#2ecc40';ctx.fillText(playerScore.toLocaleString(),450,103);
+  tx('PUNTOS',450,124,9,'#aaa');
 
   if(playerName){
     // Nombre ya guardado — mostrar confirmación
     ctx.fillStyle='rgba(0,80,0,0.3)';ctx.fillRect(200,135,500,45);
     ctx.strokeStyle='#2ecc40';ctx.lineWidth=2;ctx.strokeRect(200,135,500,45);
-    tx('✔ GUARDADO: '+playerName,LW/2,165,11,'#2ecc40');
+    tx('✔ GUARDADO: '+playerName,450,165,11,'#2ecc40');
   } else {
     // Name input area
     ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(200,135,500,55);
     ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(200,135,500,55);
-    tx('INGRESA TU NOMBRE:',LW/2,157,8,'#ffd400');
+    tx('INGRESA TU NOMBRE:',450,157,8,'#ffd400');
     const displayName=(rankNameInput||'')+(Math.floor(bl*2)%2?'█':'▏');
-    tx(displayName||'▏',LW/2,178,13,'#fff');
+    tx(displayName||'▏',450,178,13,'#fff');
   }
 
   // Buttons
@@ -1962,7 +1809,7 @@ function drawRanking(){
   tx('CONTINUAR',580,btnY+28,10,'#4488ff');
 
   // Top scores
-  tx('- MEJORES PUNTAJES -',LW/2,268,9,'#ffd400');
+  tx('- MEJORES PUNTAJES -',450,268,9,'#ffd400');
   const topScores=savedScores.slice(0,5);
   topScores.forEach((s,i)=>{
     const col=i==0?'#FFD700':i==1?'#C0C0C0':i==2?'#CD7F32':'#aaa';
@@ -1972,30 +1819,31 @@ function drawRanking(){
   });
 
   // Keyboard hint
-  if(!playerName&&Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',LW/2,440,7,'#555');
-  if(playerName&&Math.floor(bl*2)%2)tx('ESPACIO=CONTINUAR PELEANDO',LW/2,440,7,'#2ecc40');
+  if(!playerName&&Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',450,440,7,'#555');
+  if(playerName&&Math.floor(bl*2)%2)tx('ESPACIO=CONTINUAR PELEANDO',450,440,7,'#2ecc40');
 }
 
 function drawTitleScores(){
   if(savedScores.length==0)return;
-  tx('RECORDS:',LW/2,330,8,'#ffd400');
+  tx('RECORDS:',450,330,8,'#ffd400');
   const top=savedScores.slice(0,3);
   top.forEach((s,i)=>{
     const col=i==0?'#FFD700':i==1?'#C0C0C0':'#CD7F32';
-    tx((i+1)+'. '+s.name+' - '+s.score.toLocaleString(),LW/2,350+i*18,7,col);
+    tx((i+1)+'. '+s.name+' - '+s.score.toLocaleString(),450,350+i*18,7,col);
   });
 }
 
 function draw(){
   ctx.setTransform(1,0,0,1,0,0);
+  cv.width=LW;cv.height=LH;
   ctx.clearRect(0,0,LW,LH);
 
   imgs=countImgs(); // recount every frame — base64 images may load synchronously
   if(imgs<need){
     ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,LW,LH);
     // Title
-    tx('SANTI',LW/2,120,46,'#ffd400');
-    tx('FIGHTERS',LW/2,182,42,'#ff3b3b');
+    tx('SANTI',450,120,46,'#ffd400');
+    tx('FIGHTERS',450,182,42,'#ff3b3b');
     // Progress bar
     const pct=need>0?imgs/need:0;
     const bw=400,bh=24,bx=(LW-bw)/2,by=240;
@@ -2028,15 +1876,15 @@ function draw(){
       const off=Math.sin(bl*2+i)*5;
       spr(D.c[i],'idle',90+i*180,off,i<3?1:-1);
     }
-    tx('SANTI',LW/2,100,46,'#ffd400');
-    tx('FIGHTERS',LW/2,162,42,'#ff3b3b');
-    if(Math.floor(bl*2)%2)tx('TOCA PARA COMENZAR',LW/2,235,12,'#fff');
+    tx('SANTI',450,100,46,'#ffd400');
+    tx('FIGHTERS',450,162,42,'#ff3b3b');
+    if(Math.floor(bl*2)%2)tx('TOCA PARA COMENZAR',450,235,12,'#fff');
     // Show boss unlocked hint
-    if(bossUnlocked)tx('★ LINO-O DESBLOQUEADO ★',LW/2,262,9,'#ff4444');
+    if(bossUnlocked)tx('★ LINO-O DESBLOQUEADO ★',450,262,9,'#ff4444');
     drawTitleScores();
   }
   else if(sc=='select'){
-    tx('ELIGE TU LUCHADOR',LW/2,55,18,'#ffd400');
+    tx('ELIGE TU LUCHADOR',450,55,18,'#ffd400');
     const total=bossUnlocked?5:4;
     for(let i=0;i<5;i++){
       const cx=45+i*165;
@@ -2055,25 +1903,25 @@ function draw(){
       }
       ctx.strokeStyle=isLocked?'#333':'#ffd400';ctx.lineWidth=3;ctx.strokeRect(cx-3,100,158,215);
     }
-    tx('¡DERROTA A TODOS Y AL JEFE FINAL!',LW/2,345,9,'#aaa');
-    if(playerScore>0)tx('PUNTAJE: '+playerScore.toLocaleString(),LW/2,368,8,'#2ecc40');
+    tx('¡DERROTA A TODOS Y AL JEFE FINAL!',450,345,9,'#aaa');
+    if(playerScore>0)tx('PUNTAJE: '+playerScore.toLocaleString(),450,368,8,'#2ecc40');
   }
   else if(sc=='win'){
     spr(P.c,'win',350,0,1);
     spr(D.c[0],'hurt',650,0,-1);
-    tx('¡VICTORIA TOTAL!',LW/2,80,24,'#FFD700');
-    tx('¡JEFE FINAL DERROTADO!',LW/2,118,12,'#ff6');
-    tx('★ LINO-O DESBLOQUEADO COMO LUCHADOR ★',LW/2,145,8,'#ff4444');
-    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',LW/2,180,11,'#fff');
+    tx('¡VICTORIA TOTAL!',450,80,24,'#FFD700');
+    tx('¡JEFE FINAL DERROTADO!',450,118,12,'#ff6');
+    tx('★ LINO-O DESBLOQUEADO COMO LUCHADOR ★',450,145,8,'#ff4444');
+    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,180,11,'#fff');
   }
   else if(sc=='lose'){
-    spr(P.c,'hurt',LW/2,0,1);
-    tx('GAME OVER',LW/2,100,36,'#f33');
-    tx('PUNTAJE FINAL: '+playerScore.toLocaleString(),LW/2,152,12,'#ff6');
+    spr(P.c,'hurt',450,0,1);
+    tx('GAME OVER',450,100,36,'#f33');
+    tx('PUNTAJE FINAL: '+playerScore.toLocaleString(),450,152,12,'#ff6');
     if(playerName){
-      tx('✔ GUARDADO EN RANKING: '+playerName,LW/2,178,8,'#2ecc40');
+      tx('✔ GUARDADO EN RANKING: '+playerName,450,178,8,'#2ecc40');
     }
-    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',LW/2,210,11,'#fff');
+    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,210,11,'#fff');
   }
   else if(sc=='ranking'){
     drawRanking();
@@ -2155,9 +2003,9 @@ function draw(){
     });
 
     // HUD
-    bar(Math.round(LW*0.078),P,0);bar(Math.round(LW*0.922),E,1);
+    bar(70,P,0);bar(830,E,1);
     // Spec bar (player only, below HP bar)
-    {const sw=200,sl=Math.round(LW*0.078),sv=specBar/100;
+    {const sw=200,sl=70,sv=specBar/100;
     ctx.fillStyle='#111';ctx.fillRect(sl-2,47,sw+4,12);
     if(sv>0){
       const sg=ctx.createLinearGradient(sl,0,sl+sw,0);
@@ -2204,31 +2052,31 @@ function draw(){
     const tCol=timeLeft<=10?'#f33':timeLeft<=30?'#ff0':'#fff';
     ctx.font='20px "Press Start 2P",monospace';ctx.textAlign='center';
     ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText(timeLeft,452,52);
-    ctx.fillStyle=tCol;ctx.fillText(timeLeft,LW/2,50);
+    ctx.fillStyle=tCol;ctx.fillText(timeLeft,450,50);
 
     // Round dots
-    drawRoundDots(Math.round(LW*0.422),roundWinsP,false);
-    drawRoundDots(Math.round(LW*0.578),roundWinsE,true);
-    tx('R'+round,LW/2,70,8,'#aaa');
+    drawRoundDots(380,roundWinsP,false);
+    drawRoundDots(520,roundWinsE,true);
+    tx('R'+round,450,70,8,'#aaa');
 
     if(sc=='intro'){
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,80,900,120);
-      tx(msg,LW/2,145,20,E.c===D.c[0]?'#ff4':'#ffd400');
-      if(mt<.8)tx('¡PELEA!',LW/2,195,30,'#f33');
+      tx(msg,450,145,20,E.c===D.c[0]?'#ff4':'#ffd400');
+      if(mt<.8)tx('¡PELEA!',450,195,30,'#f33');
     }
     if(sc=='end'||sc=='roundend'){
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,130,900,100);
-      tx(roundResult=='P'?'K.O.':roundResult=='E'?'K.O.':'EMPATE',LW/2,195,44,'#f33');
-      if(sc=='roundend'&&mt>0.8)tx('RONDA '+round+' EN BREVE...',LW/2,250,11,'#aaa');
+      tx(roundResult=='P'?'K.O.':roundResult=='E'?'K.O.':'EMPATE',450,195,44,'#f33');
+      if(sc=='roundend'&&mt>0.8)tx('RONDA '+round+' EN BREVE...',450,250,11,'#aaa');
     }
     if(sc=='fatready'){
       ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,70,900,120);
       if(fatByEnemy){
-        tx('¡FATALITY!',LW/2,110,36,'#ff0000');
-        tx('¡PREPÁRATE!',LW/2,152,18,'#ff4400');
+        tx('¡FATALITY!',450,110,36,'#ff0000');
+        tx('¡PREPÁRATE!',450,152,18,'#ff4400');
       } else {
-        tx('¡FINISH HIM!',LW/2,110,30,'#ff0000');
-        tx('¡PRESIONA FATALITY!',LW/2,152,16,'#ff4400');
+        tx('¡FINISH HIM!',450,110,30,'#ff0000');
+        tx('¡PRESIONA FATALITY!',450,152,16,'#ff4400');
         drawFatBar();
       }
     }
@@ -2239,18 +2087,18 @@ function draw(){
         ctx.globalAlpha=0.12+Math.abs(Math.sin(bl*12))*0.08;
         ctx.fillStyle='#ff0000';ctx.fillRect(0,0,900,450);
         ctx.globalAlpha=1;
-        tx('¡BRUTALITY!',LW/2,95,28,'#ff0000');
+        tx('¡BRUTALITY!',450,95,28,'#ff0000');
         if(fatHitCount>0){
           ctx.font='bold 32px "Press Start 2P",monospace';ctx.textAlign='center';
           ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText(fatHitCount+'x HIT',452,138);
-          ctx.fillStyle='#FFD700';ctx.fillText(fatHitCount+'x HIT',LW/2,136);
+          ctx.fillStyle='#FFD700';ctx.fillText(fatHitCount+'x HIT',450,136);
         }
       } else {
         // Resto de fatalities — overlay + título
         ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,0,900,450);
         const fatNames={0:'¡KAMIKAZE!',2:'¡INFERNO!',3:'¡BOMBARDEO!',4:'¡AVALANCHA!'};
         const fatTitle=fatNames[actorIdx]||'¡FATALITY!';
-        tx(fatTitle,LW/2,105,actorIdx===4?16:26,'#ff0000');
+        tx(fatTitle,450,105,actorIdx===4?16:26,'#ff0000');
         ctx.globalAlpha=0.25+Math.abs(Math.sin(bl*6))*0.15;
         ctx.fillStyle='#ff0000';ctx.fillRect(0,0,900,450);
         ctx.globalAlpha=1;
@@ -2262,10 +2110,10 @@ function draw(){
     if(sc=='fatend'){
       ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(0,0,900,450);
       if(fatByEnemy){
-        tx('HUMILLADO',LW/2,180,32,'#ff0000');
+        tx('HUMILLADO',450,180,32,'#ff0000');
       } else {
-        tx('¡PERFECTO!',LW/2,180,34,'#FFD700');
-        tx('+10,000 PUNTOS',LW/2,220,11,'#2ecc40');
+        tx('¡PERFECTO!',450,180,34,'#FFD700');
+        tx('+10,000 PUNTOS',450,220,11,'#2ecc40');
       }
     }
 
@@ -2327,7 +2175,7 @@ cv.addEventListener('pointerdown',e=>{
     if(mt<-.2){
       if(playerName){saveScoreEntry();}
       foes=[];fi=0;roundWinsP=0;roundWinsE=0;round=1;playerScore=0;playerName='';
-      sc='title';stopBgMusic();_hideRankOverlay();
+      sc='title';stopBgMusic();
       document.getElementById('splash').style.display='flex';
     }
     return;
@@ -2336,7 +2184,7 @@ cv.addEventListener('pointerdown',e=>{
     if(mt<-.2){
       if(playerName){saveScoreEntry();}
       playerScore=0;playerName='';
-      sc='title';stopBgMusic();_hideRankOverlay();
+      sc='title';stopBgMusic();
       document.getElementById('splash').style.display='flex';
     }
     return;
@@ -2354,14 +2202,12 @@ cv.addEventListener('pointerdown',e=>{
     if(x>480&&x<680&&y>250&&y<295){
       // CONTINUAR — guardar si hay nombre, seguir con el mismo score
       if(playerName){saveScoreEntry();}
-      _hideRankOverlay();
       fi=0;roundWinsP=0;roundWinsE=0;round=1;
       sc='select';startMenuMusic();
     } else if(x>220&&x<420&&y>250&&y<295&&rankNameInput.length>0){
       // GUARDAR — guarda nombre y score, habilita continuar
       playerName=rankNameInput;
       saveScoreEntry();
-      _hideRankOverlay();
       snd('win');
     }
   }
@@ -2403,23 +2249,19 @@ function _getBtnsAt(cx,cy){
 function _activateBtns(btns){
   const active=[];
   for(const b of btns){
-    const ks=b.dataset.k2?[b.dataset.k,b.dataset.k2]:[b.dataset.k];
-    for(const k of ks){
-      const atk=k=='p'||k=='k'||k=='sp'||k=='u';
-      active.push({k,atk,b});
-      if(sc=='fatready'){T.fat=1;continue;}
-      if(atk)T[k]=1;else K[k]=1;
-    }
+    const k=b.dataset.k;
+    const atk=k=='p'||k=='k'||k=='sp'||k=='u';
+    active.push({k,atk,b});
     b.classList.add('on');
+    if(sc=='fatready'){T.fat=1;continue;}
+    if(atk)T[k]=1;else K[k]=1;
   }
   return active;
 }
 
 function _deactivateBtns(active){
-  // Agrupar por b para solo hacer removeClass una vez por botón
-  const seen=new Set();
   for(const {k,atk,b} of active){
-    if(!seen.has(b)){seen.add(b);b.classList.remove('on');}
+    b.classList.remove('on');
     if(!atk)K[k]=0;
   }
 }
@@ -2437,8 +2279,8 @@ document.addEventListener('touchmove',e=>{
   for(const t of e.changedTouches){
     const prev=_touchMap[t.identifier];
     const btns=_getBtnsAt(t.clientX,t.clientY);
-    const newKeys=btns.map(b=>b.dataset.k+(b.dataset.k2?'+'+b.dataset.k2:'')).join(',');
-    const prevKeys=prev?[...new Set(prev.map(x=>x.b).map(b=>b.dataset.k+(b.dataset.k2?'+'+b.dataset.k2:'')))].join(','):'';
+    const newKeys=btns.map(b=>b.dataset.k).join(',');
+    const prevKeys=prev?prev.map(x=>x.k).join(','):'';
     if(newKeys===prevKeys)continue; // sin cambio
     e.preventDefault();
     if(prev)_deactivateBtns(prev);
@@ -2485,13 +2327,8 @@ const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'u',w:'u',
   inp.addEventListener('keydown',function(e){
     if(sc!=='ranking')return;
     if(e.key==='Enter'){
-      if(!playerName&&rankNameInput.length>0){
-        playerName=rankNameInput;saveScoreEntry();snd('win');
-        _hideRankOverlay();
-      } else if(playerName){
-        saveScoreEntry();_hideRankOverlay();
-        fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
-      }
+      if(!playerName&&rankNameInput.length>0){playerName=rankNameInput;saveScoreEntry();snd('win');}
+      else if(playerName){saveScoreEntry();fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();}
       e.preventDefault();
     }
   });
@@ -2502,5 +2339,40 @@ onkeydown=e=>{
   if(sc=='ranking'){
     if(e.key==' '){
       if(playerName){saveScoreEntry();}
-      _hideRankOverlay();
-      fi=0;rou
+      fi=0;roundWinsP=0;roundWinsE=0;round=1;
+      sc='select';startMenuMusic();e.preventDefault();return;
+    }
+    if(rankFromSplash){
+      rankFromSplash=false;sc='title';
+      document.getElementById('splash').style.display='flex';
+      e.preventDefault();return;
+    }
+    if(e.key==='Enter'){
+      if(!playerName&&rankNameInput.length>0){
+        playerName=rankNameInput;saveScoreEntry();snd('win');
+      } else if(playerName){
+        saveScoreEntry();fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
+      }
+      return;
+    }
+    if(!playerName){
+      if(e.key==='Backspace'){
+        rankNameInput=rankNameInput.slice(0,-1);
+        const inp=document.getElementById('rank-input');if(inp)inp.value=rankNameInput;
+        return;
+      }
+      if(e.key.length===1&&rankNameInput.length<10){
+        rankNameInput+=(e.key.toUpperCase());
+        const inp=document.getElementById('rank-input');if(inp)inp.value=rankNameInput;
+        return;
+      }
+    }
+  }
+  const k=KM[e.key];if(!k)return;
+  if(k=='p'||k=='k'||k=='sp'||k=='u'){if(!e.repeat)T[k]=1;} // u es flanco, no held
+  else if(k=='fat'){if(!e.repeat)T.fat=1;}
+  else K[k]=1;
+};
+onkeyup=e=>{const k=KM[e.key];if(k&&k!='p'&&k!='k'&&k!='fat'&&k!='u')K[k]=0;};
+
+</script></body></html>
