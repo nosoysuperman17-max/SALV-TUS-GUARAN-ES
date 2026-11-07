@@ -20,53 +20,104 @@ html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 #splash .rot-hint{font-size:9px;color:#ffd400;line-height:2}
 #splash button{margin-top:8px;padding:16px 32px;font-family:'Press Start 2P',monospace;font-size:12px;background:#ff3b3b;color:#fff;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation}
 
-/* Botones — PORTRAIT: zona inferior */
+/* UI overlay */
 #ui{position:fixed;inset:0;pointer-events:none;display:none}
 body.f #ui{display:block}
 
+/* Fondo circular del dpad */
+#dpad-bg{position:absolute;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,rgba(60,60,90,.6) 0%,rgba(10,10,20,.75) 100%);
+  border:2px solid rgba(255,255,255,.1);
+  box-shadow:0 0 20px rgba(0,0,0,.8) inset;}
+#dpad-bg::before,#dpad-bg::after{content:'';position:absolute;background:rgba(255,255,255,.07);border-radius:3px;}
+#dpad-bg::before{left:33%;right:33%;top:0;bottom:0;}
+#dpad-bg::after{top:33%;bottom:33%;left:0;right:0;}
+
 /* Botones base */
-.b{position:absolute;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;opacity:.82;border:2px solid rgba(0,0,0,.55);box-shadow:0 3px 0 rgba(0,0,0,.5);color:#fff;text-shadow:0 1px #000;font-family:'Press Start 2P',monospace}
-.b.on{opacity:1;transform:translateY(2px);box-shadow:none}
+.b{position:absolute;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Press Start 2P',monospace;transition:opacity .07s,filter .07s;}
+.b.on{filter:brightness(1.5)!important;transform:scale(.9)!important;}
 
-/* Tamaños landscape */
-.d{border-radius:8px;background:#333;}
-.r{border-radius:50%;}
-#fat-btn{display:none;border-radius:8px;background:linear-gradient(135deg,#8b0000,#ff0000);border:2px solid #ff6600;white-space:nowrap}
-body.fat #fat-btn{display:flex}
-#btn-sp{display:none;animation:specpulse 0.6s infinite alternate}
+/* Flechas dpad — triángulos con clip-path */
+.d{opacity:.85;border:none;background:transparent;}
+#btn-u{clip-path:polygon(50% 5%,95% 90%,5% 90%);background:rgba(200,210,255,.25);}
+#btn-d{clip-path:polygon(50% 95%,5% 10%,95% 10%);background:rgba(200,210,255,.25);}
+#btn-l{clip-path:polygon(5% 50%,90% 5%,90% 95%);background:rgba(200,210,255,.25);}
+#btn-r{clip-path:polygon(95% 50%,10% 95%,10% 5%);background:rgba(200,210,255,.25);}
+
+/* Diagonales — zonas invisibles en las esquinas del dpad */
+.dg{opacity:0;background:transparent;border:none;}
+
+/* Botones acción — estilo consola con gradiente y sombra */
+.r{border-radius:50%;border:none;flex-direction:column;gap:1px;opacity:.9;
+  box-shadow:0 4px 0 rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.2);}
+.r .ico{line-height:1;}
+.r .lbl{opacity:.85;font-family:'Press Start 2P',monospace;}
+#btn-p{background:radial-gradient(circle at 38% 32%,#ff7777,#aa0000);}
+#btn-k{background:radial-gradient(circle at 38% 32%,#ffe066,#997700);}
+#btn-g{background:radial-gradient(circle at 38% 32%,#66aaff,#0033aa);}
+#btn-sp{background:radial-gradient(circle at 38% 32%,#cc55ff,#550099);
+  display:none;animation:specpulse .6s infinite alternate;}
 body.spec #btn-sp{display:flex}
-@keyframes specpulse{from{box-shadow:0 0 8px #cc00ff}to{box-shadow:0 0 20px #cc00ff,0 0 40px #8800cc}}
+@keyframes specpulse{
+  from{box-shadow:0 4px 0 rgba(0,0,0,.6),0 0 8px #aa00ff55;}
+  to{box-shadow:0 4px 0 rgba(0,0,0,.6),0 0 22px #cc00ff,0 0 44px #8800ccaa;}}
 
-/* LANDSCAPE — botones en costados, juego llena pantalla */
+/* Fatality */
+#fat-btn{display:none;border-radius:10px;
+  background:linear-gradient(135deg,#8b0000,#ff2200);
+  border:2px solid #ff6600;white-space:nowrap;
+  box-shadow:0 4px 0 #440000,0 0 14px #ff000055;opacity:.95;}
+body.fat #fat-btn{display:flex}
+
+/* LANDSCAPE */
 @media (orientation:landscape){
-  .d{width:12vmin;height:12vmin;font-size:5vmin}
-  .r{width:13vmin;height:13vmin;font-size:1.8vmin}
-  #fat-btn{width:16vmin;height:6vmin;font-size:1.3vmin}
-  #btn-u{left:15vmin;bottom:28vmin}
-  #btn-l{left:2vmin;bottom:14vmin}
-  #btn-r{left:28vmin;bottom:14vmin}
-  #btn-d{left:15vmin;bottom:1vmin}
-  #btn-p{right:26vmin;bottom:4vmin}
-  #btn-k{right:13vmin;bottom:17vmin}
-  #btn-g{right:1vmin;bottom:30vmin}
-  #btn-sp{right:1vmin;bottom:17vmin}
-  #fat-btn{left:50%;transform:translateX(-50%);bottom:1vmin}
+  #dpad-bg{left:1.5vmin;bottom:1.5vmin;width:40vmin;height:40vmin;}
+  .d{width:13vmin;height:13vmin;font-size:5.5vmin;}
+  .dg{width:10vmin;height:10vmin;}
+  .r{width:14vmin;height:14vmin;}
+  .r .ico{font-size:3.2vmin;}
+  .r .lbl{font-size:1.1vmin;}
+  #fat-btn{width:18vmin;height:7vmin;font-size:1.3vmin;}
+  /* Dpad cruz */
+  #btn-u{left:15.5vmin;bottom:29.5vmin;}
+  #btn-l{left:1.5vmin;bottom:15.5vmin;}
+  #btn-r{left:29.5vmin;bottom:15.5vmin;}
+  #btn-d{left:15.5vmin;bottom:1.5vmin;}
+  /* Esquinas diagonales */
+  #btn-ul{left:3vmin;bottom:28vmin;}
+  #btn-ur{left:28vmin;bottom:28vmin;}
+  #btn-dl{left:3vmin;bottom:3vmin;}
+  #btn-dr{left:28vmin;bottom:3vmin;}
+  /* Acción — diamante tipo PlayStation */
+  #btn-g{right:15.5vmin;bottom:29vmin;}
+  #btn-p{right:1.5vmin;bottom:15.5vmin;}
+  #btn-k{right:15.5vmin;bottom:2vmin;}
+  #btn-sp{right:29vmin;bottom:15.5vmin;}
+  #fat-btn{left:50%;transform:translateX(-50%);bottom:1vmin;}
 }
 
-/* PORTRAIT — botones en zona inferior, 2 filas compactas */
+/* PORTRAIT */
 @media (orientation:portrait){
-  .d{width:14vw;height:14vw;font-size:5vw}
-  .r{width:16vw;height:16vw;font-size:1.8vw}
-  #fat-btn{width:36vw;height:9vw;font-size:2vw}
-  #btn-u{left:18vw;bottom:28vw}
-  #btn-l{left:2vw;bottom:14vw}
-  #btn-r{left:34vw;bottom:14vw}
-  #btn-d{left:18vw;bottom:0vw}
-  #btn-p{right:36vw;bottom:5vw}
-  #btn-k{right:18vw;bottom:19vw}
-  #btn-g{right:2vw;bottom:5vw}
-  #btn-sp{right:20vw;bottom:5vw}
-  #fat-btn{left:50%;transform:translateX(-50%);bottom:0}
+  #dpad-bg{left:1.5vw;bottom:1.5vw;width:50vw;height:50vw;}
+  .d{width:16vw;height:16vw;font-size:7vw;}
+  .dg{width:12vw;height:12vw;}
+  .r{width:17vw;height:17vw;}
+  .r .ico{font-size:5vw;}
+  .r .lbl{font-size:1.6vw;}
+  #fat-btn{width:38vw;height:9vw;font-size:2.2vw;}
+  #btn-u{left:18vw;bottom:35vw;}
+  #btn-l{left:1.5vw;bottom:18vw;}
+  #btn-r{left:36vw;bottom:18vw;}
+  #btn-d{left:18vw;bottom:1.5vw;}
+  #btn-ul{left:4vw;bottom:33vw;}
+  #btn-ur{left:34vw;bottom:33vw;}
+  #btn-dl{left:4vw;bottom:3.5vw;}
+  #btn-dr{left:34vw;bottom:3.5vw;}
+  #btn-g{right:18vw;bottom:35vw;}
+  #btn-p{right:2vw;bottom:18vw;}
+  #btn-k{right:18vw;bottom:1.5vw;}
+  #btn-sp{right:36vw;bottom:18vw;}
+  #fat-btn{left:50%;transform:translateX(-50%);bottom:0;}
 }
 </style></head><body>
 
@@ -83,14 +134,19 @@ body.spec #btn-sp{display:flex}
 
 <canvas id="c"></canvas>
 <div id="ui">
+  <div id="dpad-bg"></div>
   <div class="b d" id="btn-u" data-k="u">▲</div>
   <div class="b d" id="btn-l" data-k="l">◀</div>
   <div class="b d" id="btn-r" data-k="r">▶</div>
   <div class="b d" id="btn-d" data-k="d">▼</div>
-  <div class="b r" id="btn-p" data-k="p" style="background:#d22">PUÑO</div>
-  <div class="b r" id="btn-k" data-k="k" style="background:#e8b800">PATADA</div>
-  <div class="b r" id="btn-g" data-k="g" style="background:#26c">DEFENSA</div>
-  <div class="b r" id="btn-sp" data-k="sp" style="background:#8800cc">⚡ESPECIAL</div>
+  <div class="b dg" id="btn-ul" data-k="u" data-k2="l"></div>
+  <div class="b dg" id="btn-ur" data-k="u" data-k2="r"></div>
+  <div class="b dg" id="btn-dl" data-k="d" data-k2="l"></div>
+  <div class="b dg" id="btn-dr" data-k="d" data-k2="r"></div>
+  <div class="b r" id="btn-p" data-k="p"><span class="ico">👊</span><span class="lbl">PUÑO</span></div>
+  <div class="b r" id="btn-k" data-k="k"><span class="ico">🦵</span><span class="lbl">PATADA</span></div>
+  <div class="b r" id="btn-g" data-k="g"><span class="ico">🛡️</span><span class="lbl">DEF</span></div>
+  <div class="b r" id="btn-sp" data-k="sp"><span class="ico">⚡</span><span class="lbl">ESP</span></div>
   <div class="b" id="fat-btn" data-k="fat">💀 FATALITY</div>
 </div>
 <script>
@@ -971,41 +1027,23 @@ function doFatality(){
       }
       break;
     }
-    case 0: { // LINO-O (me=0) — salta y sale de escena, helicóptero llega y se estrella
+    case 0: { // LINO-O (me=0) — helicoptero cae de arriba y explota (igual que el misil de Santi)
       snd('heli');
-      // Actor jump-exits first (hides himself), then heli crashes on victim
-      const heliFromRight = actor.x < victim.x; // heli comes from same side actor exits
-      const heliStartX = heliFromRight ? LW+200 : -200;
-      const heliVX = heliFromRight ? -3.2 : 3.2;
       fatSeq=[
         {t:0.0, a:'back_off'},
         {t:0.4, a:'jump_exit'},
-        {t:3.5, a:'explosion_impact'},
-        {t:5.0, a:'pose'},
+        {t:2.8, a:'explosion_impact'},
+        {t:4.5, a:'pose'},
       ];
-      // Helicopter image flies in from edge toward victim
+      // Heli cae desde arriba directo sobre la victima — mismo patron que el misil de Santi
       fatParticles.push({
-        x:heliStartX,y:60,vx:heliVX,vy:1.0,
-        t:0,delay:0.8,life:8,type:'heli_img',
-        col:'#cc0000',size:240,rot:0,
-        _targetX:victim.x,_targetY:G+victim.y-80,_dead:false
+        x:victim.x, y:-200,
+        vx:0, vy:5,
+        t:0, delay:0.8, life:5,
+        type:'heli_img',
+        col:'#cc0000', size:300,
+        _dead:false, _fromRight:true
       });
-      // Explosion GIF at impact point
-      fatParticles.push({
-        x:victim.x,y:G+victim.y-80,vx:0,vy:0,
-        t:0,delay:2.1,life:3.0,type:'explosion_gif',
-        col:'#ff8800',size:320
-      });
-      // Flash at impact
-      fatParticles.push({x:victim.x,y:G+victim.y-100,vx:0,vy:0,t:0,delay:3.4,life:0.5,type:'flash',col:'#ffffff',size:340});
-      // Debris
-      for(let i=0;i<30;i++){
-        fatParticles.push({
-          x:victim.x+(Math.random()-0.5)*30,y:G+victim.y-70,
-          vx:(Math.random()-0.5)*10,vy:-Math.random()*8-2,
-          t:0,delay:3.45,life:2.0,type:'blood',col:'#cc0000',size:5+Math.random()*10
-        });
-      }
       break;
     }
     default: { // Fallback
@@ -1145,37 +1183,17 @@ function updateFatParticles(){
         setS(victim,'ko');
       }
     } else if(p.type=='heli_img'){
-      // Fases: 0=vuela hacia víctima a media altura, 1=baja lento, 2=rebote, 3=cae rápido
+      // Cae directo desde arriba — igual que el misil de Santi
       if(!p._dead){
-        p._phase=p._phase||0; p._phaseT=(p._phaseT||0)+DT;
-        const tx=p._targetX||victim.x;
-        const groundY=G-20;
-        if(p._phase===0){
-          // Vuela horizontalmente hacia víctima, altura estable ~90
-          p.x+=p.vx;
-          p.y+=(90-p.y)*0.05;
-          if(Math.abs(p.x-tx)<70){p._phase=1;p._phaseT=0;p.vx=0;p.vy=0.8;}
-        } else if(p._phase===1){
-          // Baja lento
-          p.vy=Math.min(p.vy+0.06,3.5);p.y+=p.vy;
-          if(p.y>=groundY){p.y=groundY;p._phase=2;p._phaseT=0;p.vy=-4.0;}
-        } else if(p._phase===2){
-          // Rebote hacia arriba
-          p.vy+=0.22;p.y+=p.vy;
-          if(p.vy>=0){p._phase=3;p._phaseT=0;p.vy=0;}
-        } else if(p._phase===3){
-          // Caída final rápida
-          p.vy=Math.min(p.vy+0.5,15);p.y+=p.vy;
-          if(p.y>=groundY&&!p._boom){
-            p._boom=true;p._dead=true;
-            snd('ko');shake=30;
-            victim._fatHidden=true;
-            setS(victim,'ko');
-            // Explosión aparece al impactar
-            fatParticles.push({x:p.x,y:G-70,vx:0,vy:0,t:0,delay:0,life:3.5,type:'explosion_gif',col:'#ff8800',size:380});
-            fatParticles.push({x:p.x,y:G-50,vx:0,vy:0,t:0,delay:0,life:0.5,type:'flash',col:'#ffffff',size:440});
-            for(let _i=0;_i<30;_i++){fatParticles.push({x:p.x+(Math.random()-0.5)*40,y:G-20,vx:(Math.random()-0.5)*14,vy:-Math.random()*10-3,t:0,delay:0,life:2.0,type:'blood',col:_i%3===0?'#cc0000':_i%3===1?'#ff6600':'#888',size:6+Math.random()*12});}
-          }
+        p.y+=p.vy;
+        if(!p._boom&&p.y>=G-20){
+          p._boom=true;p._dead=true;
+          snd('ko');shake=28;
+          victim._fatHidden=true;
+          setS(victim,'ko');
+          fatParticles.push({x:p.x,y:G-80,vx:0,vy:0,t:0,life:3.5,type:'explosion_gif',col:'#ff8800',size:380});
+          fatParticles.push({x:p.x,y:G-60,vx:0,vy:0,t:0,life:0.5,type:'flash',col:'#ffffff',size:440});
+          for(let _i=0;_i<35;_i++){fatParticles.push({x:p.x+(Math.random()-0.5)*40,y:G-30,vx:(Math.random()-0.5)*12,vy:-Math.random()*9-2,t:0,life:2.0,type:'blood',col:_i%3===0?'#cc0000':_i%3===1?'#ff6600':'#888',size:5+Math.random()*12});}
         }
       }
     } else if(p.type=='explosion_real'){
