@@ -77,7 +77,9 @@ body.spec #btn-sp{display:flex}
   <div class="rot-hint">📱➡️ Girá el celular para<br>mejor experiencia</div>
   <div class="hint">También podés jugar en vertical</div>
   <button id="btn-start" ontouchend="startGame(event)">▶ INICIAR</button>
+  <button id="btn-ranking-splash" ontouchend="showRankingFromSplash(event)" style="margin-top:4px;padding:12px 28px;font-family:'Press Start 2P',monospace;font-size:10px;background:#0a0a3a;color:#ffd400;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation">🏆 RANKING</button>
 </div>
+<input type="text" id="rank-input" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" style="position:fixed;opacity:0;pointer-events:none;left:50%;top:60%;width:1px;height:1px;z-index:999;font-size:16px">
 
 <canvas id="c"></canvas>
 <div id="ui">
@@ -106,8 +108,18 @@ function startGame(e){
   if(e)e.preventDefault();
   document.getElementById('splash').style.display='none';
   aud();
+  startMenuMusic();
+}
+function showRankingFromSplash(e){
+  if(e)e.preventDefault();
+  document.getElementById('splash').style.display='none';
+  aud();
+  rankFromSplash=true;
+  rankNameInput='';
+  sc='ranking';
 }
 document.getElementById('btn-start').addEventListener('click',startGame);
+document.getElementById('btn-ranking-splash').addEventListener('click',showRankingFromSplash);
 
 const D={"ah":214,"c":[{"n":"LINO-O","img":"assets/images/lino-o_sprite.png","por":"assets/images/lino-o_portrait.png","fr":{"idle":[0,142,212,80],"guard":[144,152,212,81],"ready":[298,152,212,83],"walk":[452,150,212,89],"run":[604,179,212,119],"p1":[785,171,174,91],"p2":[958,184,174,99],"p3":[1144,145,174,91],"k1":[1291,181,174,71],"k2":[1474,154,174,74],"k3":[1630,191,174,67],"crouch":[1823,151,196,105],"jump":[1976,148,196,103],"hit":[2126,137,196,53],"hurt":[2265,162,196,92],"win":[2429,154,196,78],"lose":[2585,125,196,87]}},{"n":"ESGAY","img":"assets/images/esgay_sprite.png","por":"assets/images/esgay_portrait.png","fr":{"idle":[0,95,212,55],"guard":[97,125,212,73],"ready":[224,136,212,79],"walk":[362,128,212,90],"run":[492,170,212,132],"p1":[664,161,174,79],"p2":[827,170,174,85],"p3":[999,142,174,77],"k1":[1143,149,174,44],"k2":[1294,144,174,48],"k3":[1440,181,174,45],"crouch":[1623,122,196,64],"jump":[1747,135,196,87],"hit":[1884,118,196,66],"hurt":[2004,121,196,81],"win":[2127,128,196,79],"lose":[2257,81,196,62]}},{"n":"CARTER","img":"assets/images/carter_sprite.png","por":"assets/images/carter_portrait.png","fr":{"idle":[0,95,212,54],"guard":[97,120,212,68],"ready":[219,140,212,76],"walk":[361,127,212,95],"run":[490,173,212,132],"p1":[665,160,174,80],"p2":[827,172,174,92],"p3":[1001,136,174,95],"k1":[1139,167,174,53],"k2":[1308,147,174,48],"k3":[1457,200,174,59],"crouch":[1659,128,196,91],"jump":[1789,131,196,94],"hit":[1922,114,196,44],"hurt":[2038,123,196,86],"win":[2163,121,196,58],"lose":[2286,86,196,66]}},{"n":"SANTI","img":"assets/images/santi_sprite.png","por":"assets/images/santi_portrait.png","fr":{"idle":[0,87,212,50],"guard":[89,113,212,69],"ready":[204,133,212,73],"walk":[339,119,212,80],"run":[460,169,212,131],"p1":[631,151,174,79],"p2":[784,164,174,86],"p3":[950,122,174,80],"k1":[1074,154,174,37],"k2":[1230,129,174,43],"k3":[1361,189,174,37],"crouch":[1552,122,196,93],"jump":[1676,133,196,95],"hit":[1811,119,196,38],"hurt":[1932,103,196,80],"win":[2037,126,196,49],"lose":[2165,79,196,62]}},{"n":"VAZQUEZ","img":"assets/images/vazquez_sprite.png","por":"assets/images/vazquez_portrait.png","fr":{"idle":[0,100,212,54],"guard":[102,121,212,76],"ready":[225,136,212,82],"walk":[363,128,212,95],"run":[493,177,212,130],"p1":[672,172,174,90],"p2":[846,168,174,108],"p3":[1016,145,174,110],"k1":[1163,156,174,45],"k2":[1321,128,174,48],"k3":[1451,173,174,35],"crouch":[1626,128,196,94],"jump":[1756,130,196,88],"hit":[1888,135,196,49],"hurt":[2025,125,196,82],"win":[2152,135,196,52],"lose":[2289,84,196,63]}}]};
 
@@ -265,6 +277,33 @@ function stopBgMusic(){
   bgNodes=[];
 }
 
+function startMenuMusic(){
+  if(!bgAudio){bgAudio=new Audio();bgAudio.loop=true;bgAudio.volume=0.55;}
+  const src='assets/audio/bgm1.mp3';
+  if(bgAudio._src===src){if(bgAudio.paused){bgAudio.play().catch(()=>{setTimeout(()=>{bgAudio&&bgAudio.play().catch(()=>{});},300);});}return;}
+  bgAudio.pause();bgAudio.src=src;bgAudio._src=src;bgAudio.load();bgAudio.currentTime=0;
+  bgAudio.play().catch(()=>{setTimeout(()=>{bgAudio&&bgAudio.play().catch(()=>{});},300);});
+}
+
+function saveScoreEntry(){
+  if(!playerName)return;
+  const idx=savedScores.findIndex(s=>s.name===playerName);
+  if(idx>=0){savedScores[idx].score=Math.max(savedScores[idx].score,playerScore);}
+  else{savedScores.push({name:playerName,score:playerScore});}
+  savedScores.sort((a,b)=>b.score-a.score);
+  savedScores=savedScores.slice(0,10);
+  try{localStorage.setItem('sf_scores',JSON.stringify(savedScores));}catch(e){}
+}
+
+function goToRanking(){
+  sc='ranking';mt=0;rankFromSplash=false;
+  rankNameInput=playerName||'';
+  setTimeout(()=>{
+    const inp=document.getElementById('rank-input');
+    if(inp){inp.value=rankNameInput;inp.focus();}
+  },200);
+}
+
 
 // === LOAD IMAGES ===
 let imgs=0;
@@ -330,6 +369,7 @@ let bossUnlocked=false;
 let playerScore=0;
 let playerName='';
 let savedScores=[];
+let rankFromSplash=false;
 try{
   bossUnlocked=localStorage.getItem('sf_boss')==='1';
   savedScores=JSON.parse(localStorage.getItem('sf_scores')||'[]');
@@ -1451,7 +1491,7 @@ function afterFatality(){
       if(defeatedBoss){
         bossUnlocked=true;
         try{localStorage.setItem('sf_boss','1');}catch(e){}
-        sc='ranking';mt=0;
+        goToRanking();
       } else {
         sc='win';mt=1;
       }
@@ -1555,8 +1595,8 @@ function step(){
         // Should have been handled through fatready, but fallback
         playerScore+=10000;fi++;
         if(fi>=foes.length){
-          sc=foes.includes(0)?'ranking':'win';mt=1;
-          if(foes.includes(0)){bossUnlocked=true;try{localStorage.setItem('sf_boss','1');}catch(e){}}
+          if(foes.includes(0)){bossUnlocked=true;try{localStorage.setItem('sf_boss','1');}catch(e){}goToRanking();}
+          else{sc='win';mt=1;}
         } else {round=1;roundWinsP=0;roundWinsE=0;startRound();}
       } else {sc='lose';mt=1;}
     }
@@ -1682,7 +1722,7 @@ function drawScoreHUD(){
 }
 
 // === RANKING SCREEN ===
-let rankInputActive=false,rankNameInput='';
+let rankNameInput='';
 function drawRanking(){
   ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,900,450);
   // Starfield
@@ -1691,29 +1731,59 @@ function drawRanking(){
     ctx.fillStyle='rgba(255,255,255,'+(0.3+Math.sin(bl*2+i)*0.3)+')';
     ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
   }
-  tx('¡VICTORIA TOTAL!',450,55,22,'#FFD700');
-  tx('JEFE FINAL DERROTADO',450,85,11,'#ff6');
+
+  if(rankFromSplash){
+    // Modo solo visualización desde el splash
+    tx('🏆 RANKING',450,60,20,'#FFD700');
+    tx('- MEJORES PUNTAJES -',450,100,9,'#ffd400');
+    const topScores=savedScores.slice(0,8);
+    if(topScores.length===0){tx('(Sin puntajes aún)',450,200,9,'#555');}
+    topScores.forEach((s,i)=>{
+      const col=i==0?'#FFD700':i==1?'#C0C0C0':i==2?'#CD7F32':'#aaa';
+      const medal=['🥇','🥈','🥉',''][Math.min(i,3)];
+      tx(medal+' '+(i+1)+'. '+s.name,320,130+i*32,9,col,'left');
+      tx(s.score.toLocaleString(),640,130+i*32,9,col,'right');
+    });
+    // Volver button
+    ctx.fillStyle='#2a1a0a';ctx.fillRect(300,395,300,40);
+    ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(300,395,300,40);
+    tx('◀ VOLVER',450,421,11,'#ffd400');
+    return;
+  }
+
+  tx('¡VICTORIA TOTAL!',450,42,20,'#FFD700');
+  tx('JEFE FINAL DERROTADO',450,68,10,'#ff6');
 
   // Player score big
-  ctx.font='28px "Press Start 2P",monospace';ctx.textAlign='center';
-  ctx.fillStyle='#000';ctx.fillText(playerScore.toLocaleString(),452,132);
-  ctx.fillStyle='#2ecc40';ctx.fillText(playerScore.toLocaleString(),450,130);
-  tx('PUNTOS',450,158,10,'#aaa');
+  ctx.font='26px "Press Start 2P",monospace';ctx.textAlign='center';
+  ctx.fillStyle='#000';ctx.fillText(playerScore.toLocaleString(),452,105);
+  ctx.fillStyle='#2ecc40';ctx.fillText(playerScore.toLocaleString(),450,103);
+  tx('PUNTOS',450,124,9,'#aaa');
 
-  // Name input area
-  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(200,170,500,60);
-  ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(200,170,500,60);
-  tx('INGRESA TU NOMBRE:',450,195,9,'#ffd400');
-  const displayName=(rankNameInput||'_')+(Math.floor(bl*2)%2?'█':'');
-  tx(displayName,450,218,14,'#fff');
+  if(playerName){
+    // Nombre ya guardado — mostrar confirmación
+    ctx.fillStyle='rgba(0,80,0,0.3)';ctx.fillRect(200,135,500,45);
+    ctx.strokeStyle='#2ecc40';ctx.lineWidth=2;ctx.strokeRect(200,135,500,45);
+    tx('✔ GUARDADO: '+playerName,450,165,11,'#2ecc40');
+  } else {
+    // Name input area
+    ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(200,135,500,55);
+    ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(200,135,500,55);
+    tx('INGRESA TU NOMBRE:',450,157,8,'#ffd400');
+    const displayName=(rankNameInput||'')+(Math.floor(bl*2)%2?'█':'▏');
+    tx(displayName||'▏',450,178,13,'#fff');
+  }
 
   // Buttons
-  const btnY=250;
-  // SAVE button
-  ctx.fillStyle=rankNameInput.length>0?'#1a6e1a':'#333';
-  ctx.fillRect(220,btnY,200,45);
-  ctx.strokeStyle='#2ecc40';ctx.lineWidth=2;ctx.strokeRect(220,btnY,200,45);
-  tx('GUARDAR',320,btnY+28,11,'#2ecc40');
+  const btnY=205;
+  if(!playerName){
+    // GUARDAR button
+    const canSave=rankNameInput.length>0;
+    ctx.fillStyle=canSave?'#1a6e1a':'#222';
+    ctx.fillRect(220,btnY,200,45);
+    ctx.strokeStyle=canSave?'#2ecc40':'#444';ctx.lineWidth=2;ctx.strokeRect(220,btnY,200,45);
+    tx('GUARDAR',320,btnY+28,11,canSave?'#2ecc40':'#555');
+  }
 
   // CONTINUE button
   ctx.fillStyle='#1a1a6e';ctx.fillRect(480,btnY,200,45);
@@ -1721,16 +1791,18 @@ function drawRanking(){
   tx('CONTINUAR',580,btnY+28,10,'#4488ff');
 
   // Top scores
-  tx('- MEJORES PUNTAJES -',450,315,9,'#ffd400');
+  tx('- MEJORES PUNTAJES -',450,268,9,'#ffd400');
   const topScores=savedScores.slice(0,5);
   topScores.forEach((s,i)=>{
     const col=i==0?'#FFD700':i==1?'#C0C0C0':i==2?'#CD7F32':'#aaa';
-    tx((i+1)+'. '+s.name,310,338+i*22,8,col,'left');
-    tx(s.score.toLocaleString(),640,338+i*22,8,col,'right');
+    const isMe=s.name===playerName;
+    tx((i+1)+'. '+s.name+(isMe?' ◀':''),320,290+i*26,8,isMe?'#2ecc40':col,'left');
+    tx(s.score.toLocaleString(),640,290+i*26,8,isMe?'#2ecc40':col,'right');
   });
 
   // Keyboard hint
-  if(Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',450,440,7,'#555');
+  if(!playerName&&Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',450,440,7,'#555');
+  if(playerName&&Math.floor(bl*2)%2)tx('ESPACIO=CONTINUAR PELEANDO',450,440,7,'#2ecc40');
 }
 
 function drawTitleScores(){
@@ -1827,8 +1899,11 @@ function draw(){
   else if(sc=='lose'){
     spr(P.c,'hurt',450,0,1);
     tx('GAME OVER',450,100,36,'#f33');
-    tx('PUNTAJE: '+playerScore.toLocaleString(),450,155,13,'#ff6');
-    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,195,11,'#fff');
+    tx('PUNTAJE FINAL: '+playerScore.toLocaleString(),450,152,12,'#ff6');
+    if(playerName){
+      tx('✔ GUARDADO EN RANKING: '+playerName,450,178,8,'#2ecc40');
+    }
+    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,210,11,'#fff');
   }
   else if(sc=='ranking'){
     drawRanking();
@@ -2057,7 +2132,7 @@ cv.addEventListener('pointerdown',e=>{
   const r=cv.getBoundingClientRect();
   const x=(e.clientX-r.left)*LW/r.width,y=(e.clientY-r.top)*LH/r.height;
 
-  if(sc=='title'){sc='select';snd('select');fs();return;}
+  if(sc=='title'){sc='select';snd('select');fs();startMenuMusic();document.getElementById('splash').style.display='none';return;}
   if(sc=='select'){
     for(let i=0;i<(bossUnlocked?5:4);i++){
       const cx=45+i*165;
@@ -2079,25 +2154,43 @@ cv.addEventListener('pointerdown',e=>{
     return;
   }
   if(sc=='win'){
-    if(mt<-.2){foes=[];fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='title';stopBgMusic();}
+    if(mt<-.2){
+      if(playerName){saveScoreEntry();}
+      foes=[];fi=0;roundWinsP=0;roundWinsE=0;round=1;playerScore=0;playerName='';
+      sc='title';stopBgMusic();
+      document.getElementById('splash').style.display='flex';
+    }
     return;
   }
   if(sc=='lose'){
-    if(mt<-.2){sc='title';stopBgMusic();}
+    if(mt<-.2){
+      if(playerName){saveScoreEntry();}
+      playerScore=0;playerName='';
+      sc='title';stopBgMusic();
+      document.getElementById('splash').style.display='flex';
+    }
     return;
   }
   if(sc=='ranking'){
+    if(rankFromSplash){
+      // Desde el splash: solo botón VOLVER
+      if(y>390&&y<430){
+        rankFromSplash=false;sc='title';
+        document.getElementById('splash').style.display='flex';
+      }
+      return;
+    }
     // Check button clicks
     if(x>480&&x<680&&y>250&&y<295){
-      // CONTINUE FIGHTING — keep score, go to select
-      sc='select';stopBgMusic();
+      // CONTINUAR — guardar si hay nombre, seguir con el mismo score
+      if(playerName){saveScoreEntry();}
+      fi=0;roundWinsP=0;roundWinsE=0;round=1;
+      sc='select';startMenuMusic();
     } else if(x>220&&x<420&&y>250&&y<295&&rankNameInput.length>0){
-      // SAVE
-      savedScores.push({name:rankNameInput,score:playerScore});
-      savedScores.sort((a,b)=>b.score-a.score);
-      savedScores=savedScores.slice(0,10);
-      try{localStorage.setItem('sf_scores',JSON.stringify(savedScores));}catch(e){}
-      rankNameInput='';
+      // GUARDAR — guarda nombre y score, habilita continuar
+      playerName=rankNameInput;
+      saveScoreEntry();
+      snd('win');
     }
   }
   if(sc=='fatready'){T.fat=1;}
@@ -2170,25 +2263,59 @@ document.addEventListener('touchcancel',e=>{
 // Keyboard
 const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'u',w:'u',
   ArrowDown:'d',s:'d',l:'g',c:'g',j:'p',z:'p',k:'k',x:'k',f:'fat',Enter:'fat',' ':'fat',q:'sp',e:'sp'};
+// Mobile keyboard input sync
+(function(){
+  const inp=document.getElementById('rank-input');
+  if(!inp)return;
+  inp.addEventListener('input',function(){
+    if(sc==='ranking'&&!rankFromSplash&&!playerName){
+      rankNameInput=this.value.toUpperCase().replace(/[^A-Z0-9 ]/g,'').slice(0,10);
+      this.value=rankNameInput;
+    }
+  });
+  inp.addEventListener('keydown',function(e){
+    if(sc!=='ranking')return;
+    if(e.key==='Enter'){
+      if(!playerName&&rankNameInput.length>0){playerName=rankNameInput;saveScoreEntry();snd('win');}
+      else if(playerName){saveScoreEntry();fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();}
+      e.preventDefault();
+    }
+  });
+})();
+
 onkeydown=e=>{
   // Ranking screen name input
   if(sc=='ranking'){
     if(e.key==' '){
-      // Space = continue without saving
-      sc='select';stopBgMusic();e.preventDefault();return;
+      if(playerName){saveScoreEntry();}
+      fi=0;roundWinsP=0;roundWinsE=0;round=1;
+      sc='select';startMenuMusic();e.preventDefault();return;
+    }
+    if(rankFromSplash){
+      rankFromSplash=false;sc='title';
+      document.getElementById('splash').style.display='flex';
+      e.preventDefault();return;
     }
     if(e.key==='Enter'){
-      if(rankNameInput.length>0){
-        savedScores.push({name:rankNameInput,score:playerScore});
-        savedScores.sort((a,b)=>b.score-a.score);
-        savedScores=savedScores.slice(0,10);
-        try{localStorage.setItem('sf_scores',JSON.stringify(savedScores));}catch(e){}
-        rankNameInput='';
+      if(!playerName&&rankNameInput.length>0){
+        playerName=rankNameInput;saveScoreEntry();snd('win');
+      } else if(playerName){
+        saveScoreEntry();fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
       }
       return;
     }
-    if(e.key==='Backspace'){rankNameInput=rankNameInput.slice(0,-1);return;}
-    if(e.key.length===1&&rankNameInput.length<10){rankNameInput+=e.key.toUpperCase();return;}
+    if(!playerName){
+      if(e.key==='Backspace'){
+        rankNameInput=rankNameInput.slice(0,-1);
+        const inp=document.getElementById('rank-input');if(inp)inp.value=rankNameInput;
+        return;
+      }
+      if(e.key.length===1&&rankNameInput.length<10){
+        rankNameInput+=(e.key.toUpperCase());
+        const inp=document.getElementById('rank-input');if(inp)inp.value=rankNameInput;
+        return;
+      }
+    }
   }
   const k=KM[e.key];if(!k)return;
   if(k=='p'||k=='k'||k=='sp'||k=='u'){if(!e.repeat)T[k]=1;} // u es flanco, no held
