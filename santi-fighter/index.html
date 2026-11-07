@@ -30,6 +30,7 @@ body.f #ui{display:block}
 
 /* Tamaños landscape */
 .d{border-radius:8px;background:#333;}
+.dg{border-radius:8px;background:#222;border-color:rgba(255,255,255,0.3)!important;}
 .r{border-radius:50%;}
 #fat-btn{display:none;border-radius:8px;background:linear-gradient(135deg,#8b0000,#ff0000);border:2px solid #ff6600;white-space:nowrap}
 body.fat #fat-btn{display:flex}
@@ -40,12 +41,17 @@ body.spec #btn-sp{display:flex}
 /* LANDSCAPE — botones en costados, juego llena pantalla */
 @media (orientation:landscape){
   .d{width:12vmin;height:12vmin;font-size:5vmin}
+  .dg{width:8vmin;height:8vmin;font-size:3.5vmin;opacity:0.75}
   .r{width:13vmin;height:13vmin;font-size:1.8vmin}
   #fat-btn{width:16vmin;height:6vmin;font-size:1.3vmin}
   #btn-u{left:15vmin;bottom:28vmin}
   #btn-l{left:2vmin;bottom:14vmin}
   #btn-r{left:28vmin;bottom:14vmin}
   #btn-d{left:15vmin;bottom:1vmin}
+  #btn-ul{left:5vmin;bottom:26vmin}
+  #btn-ur{left:25vmin;bottom:26vmin}
+  #btn-dl{left:5vmin;bottom:3vmin}
+  #btn-dr{left:25vmin;bottom:3vmin}
   #btn-p{right:26vmin;bottom:4vmin}
   #btn-k{right:13vmin;bottom:17vmin}
   #btn-g{right:1vmin;bottom:30vmin}
@@ -56,12 +62,17 @@ body.spec #btn-sp{display:flex}
 /* PORTRAIT — botones en zona inferior, 2 filas compactas */
 @media (orientation:portrait){
   .d{width:14vw;height:14vw;font-size:5vw}
+  .dg{width:9vw;height:9vw;font-size:4vw;opacity:0.75}
   .r{width:16vw;height:16vw;font-size:1.8vw}
   #fat-btn{width:36vw;height:9vw;font-size:2vw}
   #btn-u{left:18vw;bottom:28vw}
   #btn-l{left:2vw;bottom:14vw}
   #btn-r{left:34vw;bottom:14vw}
   #btn-d{left:18vw;bottom:0vw}
+  #btn-ul{left:6vw;bottom:27vw}
+  #btn-ur{left:30vw;bottom:27vw}
+  #btn-dl{left:6vw;bottom:1vw}
+  #btn-dr{left:30vw;bottom:1vw}
   #btn-p{right:36vw;bottom:5vw}
   #btn-k{right:18vw;bottom:19vw}
   #btn-g{right:2vw;bottom:5vw}
@@ -79,7 +90,25 @@ body.spec #btn-sp{display:flex}
   <button id="btn-start" ontouchend="startGame(event)">▶ INICIAR</button>
   <button id="btn-ranking-splash" ontouchend="showRankingFromSplash(event)" style="margin-top:4px;padding:12px 28px;font-family:'Press Start 2P',monospace;font-size:10px;background:#0a0a3a;color:#ffd400;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation">🏆 RANKING</button>
 </div>
-<input type="text" id="rank-input" maxlength="10" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" style="position:fixed;opacity:0;pointer-events:none;left:50%;top:60%;width:1px;height:1px;z-index:999;font-size:16px">
+<!-- Overlay de nombre para ranking — visible y tappable en móvil -->
+<div id="rank-overlay" style="display:none;position:fixed;inset:0;z-index:30;pointer-events:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding-top:28vh">
+  <!-- Wrapper con pointer-events:auto para iOS Safari -->
+  <div style="pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:10px;
+    background:rgba(0,0,30,0.88);border:2px solid #ffd40055;border-radius:12px;padding:20px 24px">
+    <div style="font-family:'Press Start 2P',monospace;font-size:9px;color:#ffd400;text-shadow:0 0 8px #ffd400">INGRESÁ TU NOMBRE</div>
+    <input type="text" id="rank-input" maxlength="10"
+      autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+      placeholder="▶ TOCA AQUÍ ◀"
+      style="font-family:'Press Start 2P',monospace;font-size:18px;
+      text-align:center;text-transform:uppercase;letter-spacing:3px;
+      background:rgba(0,0,20,0.95);color:#fff;
+      border:3px solid #ffd400;border-radius:6px;
+      padding:14px 18px;width:260px;max-width:70vw;
+      outline:none;caret-color:#ffd400;box-shadow:0 0 16px #ffd40088;
+      -webkit-appearance:none;font-size:16px">
+    <div style="font-family:'Press Start 2P',monospace;font-size:7px;color:#888">MÁX 10 CARACTERES</div>
+  </div>
+</div>
 
 <canvas id="c"></canvas>
 <div id="ui">
@@ -87,6 +116,11 @@ body.spec #btn-sp{display:flex}
   <div class="b d" id="btn-l" data-k="l">◀</div>
   <div class="b d" id="btn-r" data-k="r">▶</div>
   <div class="b d" id="btn-d" data-k="d">▼</div>
+  <!-- Botones diagonales — más pequeños, entre las flechas -->
+  <div class="b dg" id="btn-ul" data-k="u" data-k2="l">↖</div>
+  <div class="b dg" id="btn-ur" data-k="u" data-k2="r">↗</div>
+  <div class="b dg" id="btn-dl" data-k="d" data-k2="l">↙</div>
+  <div class="b dg" id="btn-dr" data-k="d" data-k2="r">↘</div>
   <div class="b r" id="btn-p" data-k="p" style="background:#d22">PUÑO</div>
   <div class="b r" id="btn-k" data-k="k" style="background:#e8b800">PATADA</div>
   <div class="b r" id="btn-g" data-k="g" style="background:#26c">DEFENSA</div>
@@ -298,10 +332,17 @@ function saveScoreEntry(){
 function goToRanking(){
   sc='ranking';mt=0;rankFromSplash=false;
   rankNameInput=playerName||'';
-  setTimeout(()=>{
+  // Mostrar overlay solo si aún no tiene nombre (necesita escribirlo)
+  if(!playerName){
+    const ov=document.getElementById('rank-overlay');
     const inp=document.getElementById('rank-input');
+    if(ov){ov.style.display='flex';}
     if(inp){inp.value=rankNameInput;inp.focus();}
-  },200);
+  }
+}
+function _hideRankOverlay(){
+  const ov=document.getElementById('rank-overlay');
+  if(ov)ov.style.display='none';
 }
 
 
@@ -509,6 +550,8 @@ function doSpecial(){
   specReady=false;specBar=0;
   specProjs=[];
   const ci=me; // character index del jugador
+  const _specAttacker=P; // quien lanza (referencia estable para closures)
+  const _specTarget=E;   // quien recibe (referencia estable para closures)
   setS(P,'atk');
   snd('punch');
   // D.c order: [0=LINO-O, 1=ESGAY, 2=CARTER, 3=SANTI, 4=VAZQUEZ]
@@ -518,12 +561,12 @@ function doSpecial(){
       shake=20;
       specFlash('#ff88ff',0.18);
       // Onda expansiva grande que crece desde Esgay hacia el enemigo
-      specProjs.push({x:P.x,y:G-100,vx:P.face*280,vy:0,type:'scream',t:0,life:1.5,dmg:80,r:0});
-      // Daño inmediato si el rival está cerca
-      if(Math.abs(E.x-P.x)<120){
-        E.hp=Math.max(0,E.hp-50);
+      specProjs.push({x:P.x,y:G-100,vx:P.face*280,vy:0,type:'scream',t:0,life:1.5,dmg:80,r:0,_ownerP:_specAttacker});
+      // Daño inmediato al ENEMIGO si está cerca (nunca al atacante)
+      if(_specTarget&&_specTarget.st!='ko'&&Math.abs(_specTarget.x-P.x)<120){
+        _specTarget.hp=Math.max(0,_specTarget.hp-50);
         shake=25;
-        E._stunned=true;E._stunnedT=1.1;E._stunnedFlash=0;setS(E,'hit');
+        _specTarget._stunned=true;_specTarget._stunnedT=1.1;_specTarget._stunnedFlash=0;setS(_specTarget,'hit');
       }
       break;
     }
@@ -533,11 +576,11 @@ function doSpecial(){
       specFlash('#ff8800',0.14);
       // 1 botella grande muy visible con mucho daño
       specProjs.push({x:P.x+P.face*20,y:G-120,vx:P.face*520,vy:-20,
-        type:'whisky',t:0,life:1.8,dmg:90,_big:true});
+        type:'whisky',t:0,life:1.8,dmg:90,_big:true,_ownerP:_specAttacker});
       // 2 botellas secundarias
       for(let i=0;i<2;i++){
         specProjs.push({x:P.x+P.face*20,y:G-80-i*35,vx:P.face*440+i*40,vy:-40+i*25,
-          type:'whisky',t:0,life:1.6,dmg:35});
+          type:'whisky',t:0,life:1.6,dmg:35,_ownerP:_specAttacker});
       }
       break;
     }
@@ -549,10 +592,10 @@ function doSpecial(){
       for(let i=0;i<8;i++){
         const ang=(i/8)*Math.PI*0.7-Math.PI*0.35;
         specProjs.push({x:P.x+P.face*30,y:G-110,vx:P.face*480*Math.cos(ang),vy:-280*Math.sin(ang)-120,
-          type:'bill',t:0,life:2.2,dmg:35});
+          type:'bill',t:0,life:2.2,dmg:35,_ownerP:_specAttacker});
       }
-      // Después de 0.4s: congelar enemigo
-      const _enemySanti=E;setTimeout(()=>{if(_enemySanti&&_enemySanti.st!='ko'){_enemySanti._stunned=true;_enemySanti._stunnedT=1.0;_enemySanti._stunnedFlash=0;setS(_enemySanti,'hit');}},400);
+      // Después de 0.4s: congelar enemigo (usar _specTarget, no E — puede haber swap de IA)
+      const _enemySanti=_specTarget;setTimeout(()=>{if(_enemySanti&&_enemySanti.st!='ko'){_enemySanti._stunned=true;_enemySanti._stunnedT=1.0;_enemySanti._stunnedFlash=0;setS(_enemySanti,'hit');}},400);
       break;
     }
     case 4:{ // VAZQUEZ (me=4): LLUVIA DE PLATA MASIVA desde arriba
@@ -563,10 +606,10 @@ function doSpecial(){
       for(let i=0;i<14;i++){
         specProjs.push({x:120+Math.random()*660,y:G-220-Math.random()*120,
           vx:(Math.random()-.5)*160,vy:160+Math.random()*140,
-          type:'bill',t:Math.random()*0.3,life:2.5,dmg:28});
+          type:'bill',t:Math.random()*0.3,life:2.5,dmg:28,_ownerP:_specAttacker});
       }
-      // Congelar después de 0.5s
-      const _enemyVaz=E;setTimeout(()=>{if(_enemyVaz&&_enemyVaz.st!='ko'){_enemyVaz._stunned=true;_enemyVaz._stunnedT=1.1;_enemyVaz._stunnedFlash=0;setS(_enemyVaz,'hit');}},500);
+      // Congelar después de 0.5s (usar _specTarget, no E — puede haber swap de IA)
+      const _enemyVaz=_specTarget;setTimeout(()=>{if(_enemyVaz&&_enemyVaz.st!='ko'){_enemyVaz._stunned=true;_enemyVaz._stunnedT=1.1;_enemyVaz._stunnedFlash=0;setS(_enemyVaz,'hit');}},500);
       break;
     }
     case 0:{ // LINO-O (me=0): CABALLO PIXELART A TODO GALOPE
@@ -575,8 +618,9 @@ function doSpecial(){
       snd('punch');
       const hDir=P.face>0?1:-1;
       specProjs.push({x:hDir>0?-80:LW+80,y:G-55,vx:hDir*700,vy:0,
-        type:'horse_img',t:0,life:2.0,dmg:140,face:hDir,_hit:false});
-      setS(P,'win');
+        type:'horse_img',t:0,life:2.0,dmg:140,face:hDir,_hit:false,_ownerP:P});
+      // No congelar al atacante — solo pose breve de ataque
+      setS(P,'atk');
       break;
     }
   }
@@ -597,9 +641,12 @@ function updateSpecProjs(){
     // flash_screen: no movement, just visual
     if(p.type=='flash_screen'){if(p.t>p.life)specProjs.splice(i,1);continue;}
     // Hit check: proyectiles del jugador golpean al enemigo; del enemigo al jugador
+    // _ownerP: referencia al atacante real (evita auto-daño)
     const _target=p._fromEnemy?P:E;
     const _stun=p._fromEnemy?(t,s)=>{if(P&&P.st!='ko'){P._stunned=true;P._stunnedT=t;setS(P,s||'hit');}}
                              :(t,s)=>{stunEnemy(t);setS(E,s||'hit');};
+    // No golpear al propio atacante
+    if(p._ownerP&&_target===p._ownerP){if(p.t>p.life)specProjs.splice(i,1);continue;}
     if(_target&&_target.st!='ko'){
       let hit=false;
       if(p.type=='scream'){
@@ -1539,9 +1586,9 @@ function step(){
       for(let _i=prevLen;_i<specProjs.length;_i++){specProjs[_i]._fromEnemy=true;}
     }
     upd(E,P,aiI);
-    // KO flight physics: aplicar phys a personajes ko que siguen volando
-    if(P.st=='ko'&&(P._koFlight||P.air))phys(P);
-    if(E.st=='ko'&&(E._koFlight||E.air))phys(E);
+    // KO physics: siempre actualizar personajes ko para que caigan y animen correctamente
+    if(P.st=='ko')phys(P);
+    if(E.st=='ko')phys(E);
     // Auto-facing: ambos siempre miran al rival (excepto KO/win)
     if(P.st!='ko'&&P.st!='win'){P.face=P.x<E.x?1:-1;}
     if(E.st!='ko'&&E.st!='win'){E.face=E.x<P.x?1:-1;}
@@ -1558,9 +1605,9 @@ function step(){
     if(mt<=0){startRound();}
   }
   else if(sc=='fatready'){
-    // KO flight physics in fatready state too
-    if(P&&P.st=='ko'&&(P._koFlight||P.air))phys(P);
-    if(E&&E.st=='ko'&&(E._koFlight||E.air))phys(E);
+    // KO physics in fatready state too
+    if(P&&P.st=='ko')phys(P);
+    if(E&&E.st=='ko')phys(E);
     // Don't call upd() here — HP is 0, would re-trigger finRound
     if(fatByEnemy){
       // IA hace el fatality automáticamente tras breve pausa
@@ -2157,7 +2204,7 @@ cv.addEventListener('pointerdown',e=>{
     if(mt<-.2){
       if(playerName){saveScoreEntry();}
       foes=[];fi=0;roundWinsP=0;roundWinsE=0;round=1;playerScore=0;playerName='';
-      sc='title';stopBgMusic();
+      sc='title';stopBgMusic();_hideRankOverlay();
       document.getElementById('splash').style.display='flex';
     }
     return;
@@ -2166,7 +2213,7 @@ cv.addEventListener('pointerdown',e=>{
     if(mt<-.2){
       if(playerName){saveScoreEntry();}
       playerScore=0;playerName='';
-      sc='title';stopBgMusic();
+      sc='title';stopBgMusic();_hideRankOverlay();
       document.getElementById('splash').style.display='flex';
     }
     return;
@@ -2184,12 +2231,14 @@ cv.addEventListener('pointerdown',e=>{
     if(x>480&&x<680&&y>250&&y<295){
       // CONTINUAR — guardar si hay nombre, seguir con el mismo score
       if(playerName){saveScoreEntry();}
+      _hideRankOverlay();
       fi=0;roundWinsP=0;roundWinsE=0;round=1;
       sc='select';startMenuMusic();
     } else if(x>220&&x<420&&y>250&&y<295&&rankNameInput.length>0){
       // GUARDAR — guarda nombre y score, habilita continuar
       playerName=rankNameInput;
       saveScoreEntry();
+      _hideRankOverlay();
       snd('win');
     }
   }
@@ -2231,19 +2280,23 @@ function _getBtnsAt(cx,cy){
 function _activateBtns(btns){
   const active=[];
   for(const b of btns){
-    const k=b.dataset.k;
-    const atk=k=='p'||k=='k'||k=='sp'||k=='u';
-    active.push({k,atk,b});
+    const ks=b.dataset.k2?[b.dataset.k,b.dataset.k2]:[b.dataset.k];
+    for(const k of ks){
+      const atk=k=='p'||k=='k'||k=='sp'||k=='u';
+      active.push({k,atk,b});
+      if(sc=='fatready'){T.fat=1;continue;}
+      if(atk)T[k]=1;else K[k]=1;
+    }
     b.classList.add('on');
-    if(sc=='fatready'){T.fat=1;continue;}
-    if(atk)T[k]=1;else K[k]=1;
   }
   return active;
 }
 
 function _deactivateBtns(active){
+  // Agrupar por b para solo hacer removeClass una vez por botón
+  const seen=new Set();
   for(const {k,atk,b} of active){
-    b.classList.remove('on');
+    if(!seen.has(b)){seen.add(b);b.classList.remove('on');}
     if(!atk)K[k]=0;
   }
 }
@@ -2261,8 +2314,8 @@ document.addEventListener('touchmove',e=>{
   for(const t of e.changedTouches){
     const prev=_touchMap[t.identifier];
     const btns=_getBtnsAt(t.clientX,t.clientY);
-    const newKeys=btns.map(b=>b.dataset.k).join(',');
-    const prevKeys=prev?prev.map(x=>x.k).join(','):'';
+    const newKeys=btns.map(b=>b.dataset.k+(b.dataset.k2?'+'+b.dataset.k2:'')).join(',');
+    const prevKeys=prev?[...new Set(prev.map(x=>x.b).map(b=>b.dataset.k+(b.dataset.k2?'+'+b.dataset.k2:'')))].join(','):'';
     if(newKeys===prevKeys)continue; // sin cambio
     e.preventDefault();
     if(prev)_deactivateBtns(prev);
@@ -2309,8 +2362,13 @@ const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'u',w:'u',
   inp.addEventListener('keydown',function(e){
     if(sc!=='ranking')return;
     if(e.key==='Enter'){
-      if(!playerName&&rankNameInput.length>0){playerName=rankNameInput;saveScoreEntry();snd('win');}
-      else if(playerName){saveScoreEntry();fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();}
+      if(!playerName&&rankNameInput.length>0){
+        playerName=rankNameInput;saveScoreEntry();snd('win');
+        _hideRankOverlay();
+      } else if(playerName){
+        saveScoreEntry();_hideRankOverlay();
+        fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
+      }
       e.preventDefault();
     }
   });
@@ -2321,6 +2379,7 @@ onkeydown=e=>{
   if(sc=='ranking'){
     if(e.key==' '){
       if(playerName){saveScoreEntry();}
+      _hideRankOverlay();
       fi=0;roundWinsP=0;roundWinsE=0;round=1;
       sc='select';startMenuMusic();e.preventDefault();return;
     }
@@ -2332,8 +2391,10 @@ onkeydown=e=>{
     if(e.key==='Enter'){
       if(!playerName&&rankNameInput.length>0){
         playerName=rankNameInput;saveScoreEntry();snd('win');
+        _hideRankOverlay();
       } else if(playerName){
-        saveScoreEntry();fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
+        saveScoreEntry();_hideRankOverlay();
+        fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
       }
       return;
     }
