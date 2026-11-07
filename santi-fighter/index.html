@@ -1609,7 +1609,7 @@ function step(){
 // === SPRITES & DRAWING ===
 function fname(f){
   const s=f.st;
-  if(s=='atk')return f.t<f.wind?'ready':(f.air?'k1':f.type+(f.idx+1));
+  if(s=='atk')return f.t<f.wind?'ready':f.type+(f.idx+1);
   if(s=='walk')return Math.floor(f.t*7)%2?'walk':(f.vx*f.face>0?'run':'idle');
   if(s=='ko')return f.t<.4?'hit':'hurt';
   return{idle:'idle',crouch:'crouch',guard:'guard',jump:'jump',hit:'hit',win:'win'}[s]||'idle';
@@ -2196,66 +2196,99 @@ cv.addEventListener('pointerdown',e=>{
   if(sc=='fatready'){T.fat=1;}
 });
 
-// Touch buttons — Touch Events nativos para multi-touch real
-// Mapa global: touchId -> key activa (para detectar slide entre botones)
+// Touch buttons — multi-touch con soporte DIAGONAL para el dpad
+// _touchMap: touchId -> array de {k, atk, b} activos
 const _touchMap={};
-function _getBtnAt(x,y){
-  const els=document.elementsFromPoint(x,y);
-  for(const el of els)if(el.dataset&&el.dataset.k)return el;
-  return null;
+const _DPAD=['l','r','u','d'];
+
+// Devuelve todos los botones que cubre el punto (con área expandida en dpad para diagonales)
+function _getBtnsAt(cx,cy){
+  const all=document.querySelectorAll('[data-k]');
+  const hits=[];
+  for(const el of all){
+    const r=el.getBoundingClientRect();
+    const isDpad=_DPAD.includes(el.dataset.k);
+    // Los botones dpad tienen zona expandida un 55% extra en cada lado → diagonales naturales
+    const margin=isDpad?r.width*0.55:0;
+    if(cx>=r.left-margin&&cx<=r.right+margin&&cy>=r.top-margin&&cy<=r.bottom+margin){
+      hits.push(el);
+    }
+  }
+  // Si hay un botón de acción tocado exactamente, descartar dpad capturado solo por margen
+  const hasExactAction=hits.some(el=>{
+    if(_DPAD.includes(el.dataset.k))return false;
+    const r=el.getBoundingClientRect();
+    return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom;
+  });
+  if(hasExactAction)return hits.filter(el=>{
+    if(!_DPAD.includes(el.dataset.k))return true;
+    const r=el.getBoundingClientRect();
+    return cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom;
+  });
+  return hits;
 }
-document.addEventListener('touchstart',e=>{
-  for(const t of e.changedTouches){
-    const b=_getBtnAt(t.clientX,t.clientY);
-    if(!b)continue;
-    e.preventDefault();
+
+function _activateBtns(btns){
+  const active=[];
+  for(const b of btns){
     const k=b.dataset.k;
     const atk=k=='p'||k=='k'||k=='sp'||k=='u';
-    _touchMap[t.identifier]={k,atk,b};
+    active.push({k,atk,b});
     b.classList.add('on');
     if(sc=='fatready'){T.fat=1;continue;}
     if(atk)T[k]=1;else K[k]=1;
   }
+  return active;
+}
+
+function _deactivateBtns(active){
+  for(const {k,atk,b} of active){
+    b.classList.remove('on');
+    if(!atk)K[k]=0;
+  }
+}
+
+document.addEventListener('touchstart',e=>{
+  for(const t of e.changedTouches){
+    const btns=_getBtnsAt(t.clientX,t.clientY);
+    if(!btns.length)continue;
+    e.preventDefault();
+    _touchMap[t.identifier]=_activateBtns(btns);
+  }
 },{passive:false});
+
 document.addEventListener('touchmove',e=>{
   for(const t of e.changedTouches){
     const prev=_touchMap[t.identifier];
-    const b=_getBtnAt(t.clientX,t.clientY);
-    const newK=b?b.dataset.k:null;
-    // Salió de un botón
-    if(prev&&(!b||newK!==prev.k)){
-      prev.b.classList.remove('on');
-      if(!prev.atk)K[prev.k]=0;
+    const btns=_getBtnsAt(t.clientX,t.clientY);
+    const newKeys=btns.map(b=>b.dataset.k).join(',');
+    const prevKeys=prev?prev.map(x=>x.k).join(','):'';
+    if(newKeys===prevKeys)continue; // sin cambio
+    e.preventDefault();
+    if(prev)_deactivateBtns(prev);
+    if(btns.length){
+      _touchMap[t.identifier]=_activateBtns(btns);
+    } else {
       delete _touchMap[t.identifier];
-    }
-    // Entró a un botón nuevo
-    if(b&&(!prev||newK!==prev.k)){
-      e.preventDefault();
-      const k=b.dataset.k;
-      const atk=k=='p'||k=='k'||k=='sp'||k=='u';
-      _touchMap[t.identifier]={k,atk,b};
-      b.classList.add('on');
-      if(sc=='fatready'){T.fat=1;continue;}
-      if(atk)T[k]=1;else K[k]=1;
     }
   }
 },{passive:false});
+
 document.addEventListener('touchend',e=>{
   for(const t of e.changedTouches){
     const prev=_touchMap[t.identifier];
     if(!prev)continue;
     e.preventDefault();
-    prev.b.classList.remove('on');
-    if(!prev.atk)K[prev.k]=0;
+    _deactivateBtns(prev);
     delete _touchMap[t.identifier];
   }
 },{passive:false});
+
 document.addEventListener('touchcancel',e=>{
   for(const t of e.changedTouches){
     const prev=_touchMap[t.identifier];
     if(!prev)continue;
-    prev.b.classList.remove('on');
-    if(!prev.atk)K[prev.k]=0;
+    _deactivateBtns(prev);
     delete _touchMap[t.identifier];
   }
 },{passive:false});
