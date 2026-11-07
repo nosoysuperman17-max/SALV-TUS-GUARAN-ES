@@ -762,13 +762,18 @@ function drawSpecProjs(){
 }
 
 function upd(f,o,I){
-  if(f.st=='ko'||f.st=='win')return;
-  // Stun (congelado por special): no puede moverse ni atacar
+  // KO/win: solo aplicar física (caída) si está en el aire — nunca congelar en el aire
+  if(f.st=='ko'||f.st=='win'){
+    if(f.air||f.y<0)phys(f); // sigue cayendo hasta la base
+    return;
+  }
+  // Stun (congelado por special): no puede moverse ni atacar PERO sigue cayendo si está en el aire
   if(f._stunned){
     f._stunnedT-=DT;
     if(f._stunnedT<=0){f._stunned=false;setS(f,'idle');}
     // Efecto visual: parpadeo
     f._stunnedFlash=(f._stunnedFlash||0)+DT;
+    if(f.air||f.y<0)phys(f); // cae al suelo aunque esté stunned
     return; // no procesa input mientras stunned
   }
   strike(f,o);
@@ -1020,37 +1025,47 @@ function doFatality(){
     }
     case 0: { // LINO-O (me=0) — salta y sale de escena, helicóptero llega y se estrella
       snd('heli');
-      // Actor jump-exits first (hides himself), then heli crashes on victim
-      const heliFromRight = actor.x < victim.x; // heli comes from same side actor exits
-      const heliStartX = heliFromRight ? LW+200 : -200;
-      const heliVX = heliFromRight ? -3.2 : 3.2;
+      // Helicóptero entra desde el borde opuesto al actor
+      // Imagen original: cockpit a la IZQUIERDA, cola a la DERECHA
+      // Si heli viene de la derecha (vx<0) → cockpit apunta izquierda = OK (sin flip)
+      // Si heli viene de la izquierda (vx>0) → hay que flipear horizontalmente
+      const heliFromRight = actor.x > victim.x; // viene por el lado contrario al actor
+      const heliStartX = heliFromRight ? LW+300 : -300;
+      const heliVX = heliFromRight ? -1.8 : 1.8; // lento
       fatSeq=[
         {t:0.0, a:'back_off'},
         {t:0.4, a:'jump_exit'},
-        {t:3.5, a:'explosion_impact'},
-        {t:5.0, a:'pose'},
+        {t:4.5, a:'explosion_impact'},
+        {t:6.0, a:'pose'},
       ];
-      // Helicopter image flies in from edge toward victim
+      // Helicóptero grande: entra desde borde, baja lento, rebota, cae sobre víctima
+      // Fases: _phase 0=cruzando, 1=bajando, 2=rebotando, 3=cayendo final
       fatParticles.push({
-        x:heliStartX,y:60,vx:heliVX,vy:1.0,
-        t:0,delay:0.8,life:8,type:'heli_img',
-        col:'#cc0000',size:240,rot:0,
-        _targetX:victim.x,_targetY:G+victim.y-80,_dead:false
+        x:heliStartX, y:120,
+        vx:heliVX, vy:0.4,
+        t:0, delay:0.6, life:9,
+        type:'heli_img',
+        col:'#cc0000', size:300,
+        _targetX:victim.x, _targetY:G,
+        _dead:false, _phase:0,
+        _phaseT:0,
+        _fromRight:heliFromRight
       });
-      // Explosion GIF at impact point
+      // Explosión boom.gif en la BASE (y=G exacto), aparece al impactar
       fatParticles.push({
-        x:victim.x,y:G+victim.y-80,vx:0,vy:0,
-        t:0,delay:2.1,life:3.0,type:'explosion_gif',
-        col:'#ff8800',size:320
+        x:victim.x, y:G-80, vx:0, vy:0,
+        t:0, delay:4.4, life:3.5,
+        type:'explosion_gif', col:'#ff8800', size:380
       });
-      // Flash at impact
-      fatParticles.push({x:victim.x,y:G+victim.y-100,vx:0,vy:0,t:0,delay:3.4,life:0.5,type:'flash',col:'#ffffff',size:340});
-      // Debris
-      for(let i=0;i<30;i++){
+      // Flash al impacto
+      fatParticles.push({x:victim.x,y:G-60,vx:0,vy:0,t:0,delay:4.4,life:0.5,type:'flash',col:'#ffffff',size:420});
+      // Debris en la base
+      for(let i=0;i<35;i++){
         fatParticles.push({
-          x:victim.x+(Math.random()-0.5)*30,y:G+victim.y-70,
-          vx:(Math.random()-0.5)*10,vy:-Math.random()*8-2,
-          t:0,delay:3.45,life:2.0,type:'blood',col:'#cc0000',size:5+Math.random()*10
+          x:victim.x+(Math.random()-0.5)*40, y:G-30,
+          vx:(Math.random()-0.5)*12, vy:-Math.random()*9-2,
+          t:0, delay:4.42, life:2.2,
+          type:'blood', col:i%3===0?'#cc0000':i%3===1?'#ff6600':'#888', size:6+Math.random()*12
         });
       }
       break;
@@ -1192,20 +1207,55 @@ function updateFatParticles(){
         setS(victim,'ko');
       }
     } else if(p.type=='heli_img'){
-      // Real helicopter GIF image flying toward victim
-      if(relT>0.4){
-        const tx=p._targetX||victim.x,ty=(p._targetY)||(G+victim.y-80);
-        p.vx+=(tx-p.x)*0.008;
-        p.vy+=(ty-p.y)*0.008;
-      }
-      p.x+=p.vx;p.y+=p.vy;
-      // Crash when near victim base
-      const tx=p._targetX||victim.x,ty=(p._targetY)||(G+victim.y-80);
-      if(!p._boom&&Math.abs(p.x-tx)<110&&Math.abs(p.y-ty)<110){
-        p._boom=true;p._dead=true;
-        snd('ko');shake=24;
-        victim._fatHidden=true;
-        setS(victim,'ko');
+      // Helicóptero en 3 fases: 0=cruzando (vuela hacia víctima), 1=bajando lento, 2=rebote, 3=caída final
+      if(!p._dead){
+        p._phaseT=(p._phaseT||0)+DT;
+        const tx=p._targetX||victim.x;
+        const groundY=G-p.size*0.3; // base = justo sobre el suelo
+        if(p._phase===0){
+          // Vuela hacia la posición X de la víctima a media altura
+          const dist=Math.abs(p.x-tx);
+          if(dist<80){
+            // Llegó sobre la víctima — empieza a bajar
+            p._phase=1;p._phaseT=0;
+            p.vx=0; // para horizontal
+            p.vy=1.5; // empieza a caer lento
+          } else {
+            // Avanza hacia víctima
+            p.x+=p.vx;
+            p.y+=p.vy*0.3; // leve oscilación vertical
+            if(p._phaseT>1.5)p.vy=-p.vy*0.5; // leve ondulación
+          }
+        } else if(p._phase===1){
+          // Bajando lento hacia la base
+          p.vy=Math.min(p.vy+0.08,4.0); // aceleración suave
+          p.y+=p.vy;
+          if(p.y>=groundY){
+            // Tocó la base — rebote
+            p.y=groundY;
+            p._phase=2;p._phaseT=0;
+            p.vy=-3.5; // rebota hacia arriba
+          }
+        } else if(p._phase===2){
+          // Rebota hacia arriba
+          p.vy+=0.18; // gravedad ligera
+          p.y+=p.vy;
+          if(p.vy>=0){
+            // Empezó a bajar de nuevo — fase caída final
+            p._phase=3;p._phaseT=0;
+          }
+        } else if(p._phase===3){
+          // Caída final rápida sobre víctima
+          p.vy=Math.min(p.vy+0.4,12);
+          p.y+=p.vy;
+          if(p.y>=groundY&&!p._boom){
+            // IMPACTO en la base
+            p._boom=true;p._dead=true;
+            snd('ko');shake=28;
+            victim._fatHidden=true; // víctima desaparece
+            setS(victim,'ko');
+          }
+        }
       }
     } else if(p.type=='explosion_real'){
       // stays at position, just ages
@@ -1325,16 +1375,23 @@ function drawFatParticles(){
       }
       ctx.restore();
     } else if(p.type=='heli_img'){
-      // Real helicopter PNG - large, flies and crashes
+      // Helicóptero grande — imagen con cockpit a la IZQUIERDA
+      // Flip si viene desde la izquierda (vx>0 o _fromRight=false) para que cockpit apunte hacia adelante
       if(!p._dead){
         ctx.save();ctx.translate(p.x,p.y);
-        if(p.vx<0){ctx.scale(-1,1);}
-        ctx.rotate(Math.min(Math.max(p.vy*0.03,-0.4),0.4));
-        const hw=p.size,hh=p.size*0.6;
+        // Cockpit izquierda en imagen original → correcto si se mueve a la izquierda (vx<0 o phase>=1)
+        // Si viene desde la izquierda (_fromRight=false), flipear para que cockpit apunte derecha
+        const needsFlip = !p._fromRight; // viene desde izquierda → flip para que morro apunte derecha
+        if(needsFlip)ctx.scale(-1,1);
+        // Inclinación leve según velocidad vertical (cae un poco de punta)
+        const tiltAngle=p._phase>=1?Math.min(p.vy*0.025,0.35):0;
+        ctx.rotate(tiltAngle*(needsFlip?-1:1));
+        const hw=p.size, hh=p.size*0.65;
         if(FAT_IMGS.heli_img&&FAT_IMGS.heli_img.complete){
           ctx.drawImage(FAT_IMGS.heli_img,-hw/2,-hh/2,hw,hh);
         } else {
           ctx.fillStyle='#cc0000';ctx.fillRect(-hw/2,-hh/4,hw,hh/2);
+          ctx.fillStyle='#fff';ctx.fillRect(-hw/2,-hh/4,hw/3,hh/2); // "cockpit" izquierda
         }
         ctx.restore();
       }
