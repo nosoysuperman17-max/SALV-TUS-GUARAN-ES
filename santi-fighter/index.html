@@ -9,8 +9,8 @@
 html,body{margin:0;padding:0;width:100vw;height:100vh;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;font-family:'Press Start 2P',monospace;color:#fff}
 html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 
-/* Canvas — letterbox, centrado */
-#c{position:fixed;background:#000;image-rendering:pixelated;}
+/* Canvas — full screen, sin barras */
+#c{position:fixed;top:0;left:0;image-rendering:pixelated;}
 
 /* Pantalla de inicio */
 #splash{position:fixed;inset:0;background:#0a0a1a;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:20px}
@@ -20,63 +20,130 @@ html,body{touch-action:none;-webkit-overflow-scrolling:none;}
 #splash .rot-hint{font-size:9px;color:#ffd400;line-height:2}
 #splash button{margin-top:8px;padding:16px 32px;font-family:'Press Start 2P',monospace;font-size:12px;background:#ff3b3b;color:#fff;border:3px solid #ffd400;border-radius:8px;cursor:pointer;touch-action:manipulation}
 
-/* Botones — PORTRAIT: zona inferior */
+/* UI overlay — cubre toda la pantalla */
 #ui{position:fixed;inset:0;pointer-events:none;display:none}
 body.f #ui{display:block}
 
-/* Botones base */
-.b{position:absolute;pointer-events:auto;touch-action:none;display:flex;align-items:center;justify-content:center;opacity:.82;border:2px solid rgba(0,0,0,.55);box-shadow:0 3px 0 rgba(0,0,0,.5);color:#fff;text-shadow:0 1px #000;font-family:'Press Start 2P',monospace}
-.b.on{opacity:1;transform:translateY(2px);box-shadow:none}
+/* === D-PAD BASE — fondo circular decorativo === */
+#dpad-bg{
+  position:absolute;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,rgba(60,60,80,.55) 0%,rgba(20,20,30,.7) 100%);
+  border:2px solid rgba(255,255,255,.12);
+  box-shadow:0 0 18px rgba(0,0,0,.7) inset,0 2px 8px rgba(0,0,0,.5);
+  z-index:0;
+}
+/* Cruz interna decorativa del dpad */
+#dpad-bg::before,#dpad-bg::after{
+  content:'';position:absolute;background:rgba(255,255,255,.06);border-radius:4px;
+}
+#dpad-bg::before{left:33%;right:33%;top:0;bottom:0;}
+#dpad-bg::after{top:33%;bottom:33%;left:0;right:0;}
 
-/* Tamaños landscape */
-.d{border-radius:8px;background:#333;}
-.dg{border-radius:8px;background:#222;border-color:rgba(255,255,255,0.3)!important;}
-.r{border-radius:50%;}
-#fat-btn{display:none;border-radius:8px;background:linear-gradient(135deg,#8b0000,#ff0000);border:2px solid #ff6600;white-space:nowrap}
-body.fat #fat-btn{display:flex}
-#btn-sp{display:none;animation:specpulse 0.6s infinite alternate}
+/* === BOTONES BASE === */
+.b{
+  position:absolute;pointer-events:auto;touch-action:none;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:'Press Start 2P',monospace;
+  transition:opacity .08s,transform .08s;z-index:1;
+}
+.b.on{opacity:1!important;transform:scale(.92)!important;filter:brightness(1.4);}
+
+/* === D-PAD — flechas con forma triangular === */
+.d{
+  opacity:.85;border:none;background:transparent;
+}
+/* Triángulos con clip-path — cada flecha apunta en su dirección */
+#btn-u{clip-path:polygon(50% 8%,92% 88%,8% 88%);background:rgba(220,220,255,.22);}
+#btn-d{clip-path:polygon(50% 92%,8% 12%,92% 12%);background:rgba(220,220,255,.22);}
+#btn-l{clip-path:polygon(8% 50%,88% 8%,88% 92%);background:rgba(220,220,255,.22);}
+#btn-r{clip-path:polygon(92% 50%,12% 92%,12% 8%);background:rgba(220,220,255,.22);}
+.d:active,.d.on{background:rgba(255,255,255,.55)!important;}
+
+/* Diagonales — zonas invisibles en las esquinas */
+.dg{opacity:0;background:transparent;border:none;border-radius:0;}
+
+/* === BOTONES DE ACCION — estilo consola === */
+.r{
+  border-radius:50%;
+  box-shadow:0 4px 0 rgba(0,0,0,.55),0 0 0 2px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.25);
+  font-size:1.6vmin;
+  line-height:1.2;
+  flex-direction:column;gap:1px;
+  opacity:.9;
+  border:none;
+}
+.r .ico{font-size:2.4vmin;line-height:1}
+.r .lbl{font-size:1.1vmin;opacity:.85}
+
+#btn-p{background:radial-gradient(circle at 40% 35%,#ff6666,#bb1111);color:#fff;}
+#btn-k{background:radial-gradient(circle at 40% 35%,#ffe066,#b88000);color:#fff;}
+#btn-g{background:radial-gradient(circle at 40% 35%,#5599ff,#1133aa);color:#fff;}
+#btn-sp{
+  background:radial-gradient(circle at 40% 35%,#cc55ff,#660099);color:#fff;
+  display:none;animation:specpulse .6s infinite alternate;
+}
 body.spec #btn-sp{display:flex}
-@keyframes specpulse{from{box-shadow:0 0 8px #cc00ff}to{box-shadow:0 0 20px #cc00ff,0 0 40px #8800cc}}
+@keyframes specpulse{
+  from{box-shadow:0 4px 0 rgba(0,0,0,.55),0 0 10px #aa00ff88;}
+  to{box-shadow:0 4px 0 rgba(0,0,0,.55),0 0 24px #cc00ff,0 0 40px #8800ccaa;}
+}
 
-/* LANDSCAPE — botones en costados, juego llena pantalla */
+/* FATALITY */
+#fat-btn{
+  display:none;border-radius:12px;
+  background:linear-gradient(135deg,#8b0000,#ff2200);
+  border:2px solid #ff6600;white-space:nowrap;
+  box-shadow:0 4px 0 #550000,0 0 16px #ff000066;
+  font-size:1.4vmin;opacity:.95;
+}
+body.fat #fat-btn{display:flex}
+
+/* === LANDSCAPE === */
 @media (orientation:landscape){
-  .d{width:12vmin;height:12vmin;font-size:5vmin}
-  .dg{width:8vmin;height:8vmin;font-size:3.5vmin;opacity:0.75}
-  .r{width:13vmin;height:13vmin;font-size:1.8vmin}
-  #fat-btn{width:16vmin;height:6vmin;font-size:1.3vmin}
-  #btn-u{left:15vmin;bottom:28vmin}
-  #btn-l{left:2vmin;bottom:14vmin}
-  #btn-r{left:28vmin;bottom:14vmin}
-  #btn-d{left:15vmin;bottom:1vmin}
-  #btn-ul{left:5vmin;bottom:26vmin}
-  #btn-ur{left:25vmin;bottom:26vmin}
-  #btn-dl{left:5vmin;bottom:3vmin}
-  #btn-dr{left:25vmin;bottom:3vmin}
-  #btn-p{right:26vmin;bottom:4vmin}
-  #btn-k{right:13vmin;bottom:17vmin}
-  #btn-g{right:1vmin;bottom:30vmin}
-  #btn-sp{right:1vmin;bottom:17vmin}
+  #dpad-bg{left:1.5vmin;bottom:1.5vmin;width:40vmin;height:40vmin;}
+  .d{width:13vmin;height:13vmin;font-size:5.5vmin}
+  .dg{width:10vmin;height:10vmin;}
+  .r{width:14vmin;height:14vmin;}
+  #fat-btn{width:18vmin;height:7vmin;font-size:1.3vmin}
+  /* D-pad cross layout */
+  #btn-u{left:15.5vmin;bottom:29.5vmin}
+  #btn-l{left:1.5vmin;bottom:15.5vmin}
+  #btn-r{left:29.5vmin;bottom:15.5vmin}
+  #btn-d{left:15.5vmin;bottom:1.5vmin}
+  /* Diagonales en las esquinas */
+  #btn-ul{left:3vmin;bottom:28vmin}
+  #btn-ur{left:28vmin;bottom:28vmin}
+  #btn-dl{left:3vmin;bottom:3vmin}
+  #btn-dr{left:28vmin;bottom:3vmin}
+  /* Botones accion — layout diamante tipo PlayStation */
+  #btn-g{right:15.5vmin;bottom:29vmin}
+  #btn-p{right:1.5vmin;bottom:15.5vmin}
+  #btn-k{right:15.5vmin;bottom:2vmin}
+  #btn-sp{right:29vmin;bottom:15.5vmin}
   #fat-btn{left:50%;transform:translateX(-50%);bottom:1vmin}
 }
 
-/* PORTRAIT — botones en zona inferior, 2 filas compactas */
+/* === PORTRAIT === */
 @media (orientation:portrait){
-  .d{width:14vw;height:14vw;font-size:5vw}
-  .dg{width:9vw;height:9vw;font-size:4vw;opacity:0.75}
-  .r{width:16vw;height:16vw;font-size:1.8vw}
-  #fat-btn{width:36vw;height:9vw;font-size:2vw}
-  #btn-u{left:18vw;bottom:28vw}
-  #btn-l{left:2vw;bottom:14vw}
-  #btn-r{left:34vw;bottom:14vw}
-  #btn-d{left:18vw;bottom:0vw}
-  #btn-ul{left:6vw;bottom:27vw}
-  #btn-ur{left:30vw;bottom:27vw}
-  #btn-dl{left:6vw;bottom:1vw}
-  #btn-dr{left:30vw;bottom:1vw}
-  #btn-p{right:36vw;bottom:5vw}
-  #btn-k{right:18vw;bottom:19vw}
-  #btn-g{right:2vw;bottom:5vw}
-  #btn-sp{right:20vw;bottom:5vw}
+  #dpad-bg{left:1.5vw;bottom:1.5vw;width:50vw;height:50vw;}
+  .d{width:16vw;height:16vw;font-size:7vw}
+  .dg{width:12vw;height:12vw;}
+  .r{width:17vw;height:17vw;font-size:2.4vw}
+  .r .ico{font-size:4vw}
+  .r .lbl{font-size:1.6vw}
+  #fat-btn{width:38vw;height:9vw;font-size:2.2vw}
+  #btn-u{left:18vw;bottom:35vw}
+  #btn-l{left:1.5vw;bottom:18vw}
+  #btn-r{left:36vw;bottom:18vw}
+  #btn-d{left:18vw;bottom:1.5vw}
+  #btn-ul{left:4vw;bottom:33vw}
+  #btn-ur{left:34vw;bottom:33vw}
+  #btn-dl{left:4vw;bottom:3.5vw}
+  #btn-dr{left:34vw;bottom:3.5vw}
+  #btn-g{right:18vw;bottom:35vw}
+  #btn-p{right:2vw;bottom:18vw}
+  #btn-k{right:18vw;bottom:1.5vw}
+  #btn-sp{right:36vw;bottom:18vw}
   #fat-btn{left:50%;transform:translateX(-50%);bottom:0}
 }
 </style></head><body>
@@ -112,19 +179,19 @@ body.spec #btn-sp{display:flex}
 
 <canvas id="c"></canvas>
 <div id="ui">
-  <div class="b d" id="btn-u" data-k="u">▲</div>
-  <div class="b d" id="btn-l" data-k="l">◀</div>
-  <div class="b d" id="btn-r" data-k="r">▶</div>
-  <div class="b d" id="btn-d" data-k="d">▼</div>
-  <!-- Botones diagonales — más pequeños, entre las flechas -->
-  <div class="b dg" id="btn-ul" data-k="u" data-k2="l">↖</div>
-  <div class="b dg" id="btn-ur" data-k="u" data-k2="r">↗</div>
-  <div class="b dg" id="btn-dl" data-k="d" data-k2="l">↙</div>
-  <div class="b dg" id="btn-dr" data-k="d" data-k2="r">↘</div>
-  <div class="b r" id="btn-p" data-k="p" style="background:#d22">PUÑO</div>
-  <div class="b r" id="btn-k" data-k="k" style="background:#e8b800">PATADA</div>
-  <div class="b r" id="btn-g" data-k="g" style="background:#26c">DEFENSA</div>
-  <div class="b r" id="btn-sp" data-k="sp" style="background:#8800cc">⚡ESPECIAL</div>
+  <div id="dpad-bg"></div>
+  <div class="b d" id="btn-u" data-k="u"></div>
+  <div class="b d" id="btn-l" data-k="l"></div>
+  <div class="b d" id="btn-r" data-k="r"></div>
+  <div class="b d" id="btn-d" data-k="d"></div>
+  <div class="b dg" id="btn-ul" data-k="u" data-k2="l"></div>
+  <div class="b dg" id="btn-ur" data-k="u" data-k2="r"></div>
+  <div class="b dg" id="btn-dl" data-k="d" data-k2="l"></div>
+  <div class="b dg" id="btn-dr" data-k="d" data-k2="r"></div>
+  <div class="b r" id="btn-p" data-k="p"><span class="ico">👊</span><span class="lbl">PUÑO</span></div>
+  <div class="b r" id="btn-k" data-k="k"><span class="ico">🦵</span><span class="lbl">PATADA</span></div>
+  <div class="b r" id="btn-g" data-k="g"><span class="ico">🛡️</span><span class="lbl">DEF</span></div>
+  <div class="b r" id="btn-sp" data-k="sp"><span class="ico">⚡</span><span class="lbl">ESP</span></div>
   <div class="b" id="fat-btn" data-k="fat">💀 FATALITY</div>
 </div>
 <script>
@@ -160,7 +227,8 @@ const D={"ah":214,"c":[{"n":"LINO-O","img":"assets/images/lino-o_sprite.png","po
 
 
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
-const LW=900,LH=450,G=370,DT=1/60,ROUND_TIME=120,MAX_ROUNDS=2;
+const LH=450,G=370,DT=1/60,ROUND_TIME=120,MAX_ROUNDS=2;
+let LW=Math.round(LH*(screen.width/screen.height));
 cv.width=LW;cv.height=LH;
 
 // === AUDIO ===
@@ -419,14 +487,12 @@ try{
 
 // === FIT / RESIZE ===
 function fit(){
+  // Adaptar LW al aspect ratio real de la pantalla — sin barras negras
+  LW=Math.round(LH*(innerWidth/innerHeight));
   cv.width=LW;cv.height=LH;
-  cv.style.position='fixed';
-  // Letterbox: scale to fit keeping aspect ratio
-  const scale=Math.min(innerWidth/LW,innerHeight/LH);
-  const w=Math.floor(LW*scale),h=Math.floor(LH*scale);
-  cv.style.width=w+'px';cv.style.height=h+'px';
-  cv.style.left=Math.floor((innerWidth-w)/2)+'px';
-  cv.style.top=Math.floor((innerHeight-h)/2)+'px';
+  cv.style.width=innerWidth+'px';
+  cv.style.height=innerHeight+'px';
+  cv.style.left='0';cv.style.top='0';
 }
 fit();
 window.addEventListener('resize',fit);
@@ -469,7 +535,7 @@ function phys(f){
   } else {
     f.vy+=1600*DT;f.air=true;
   }
-  f.x=Math.max(60,Math.min(840,f.x+f.vx*DT));
+  f.x=Math.max(Math.round(LW*0.067),Math.min(Math.round(LW*0.933),f.x+f.vx*DT));
   if(f.st!='walk'&&f.st!='jump')f.vx*=.65;
   f.t+=DT;
 }
@@ -896,7 +962,7 @@ function ai(f,o,L){
 
 // === ROUNDS ===
 function startRound(){
-  P=mk(me,280,1);E=mk(foes[fi],620,-1);
+  P=mk(me,Math.round(LW*0.31),1);E=mk(foes[fi],Math.round(LW*0.69),-1);
   P.sp=1;E.sp=1;
   P.hp=P.mh;E.hp=E.mh;
   tm=ROUND_TIME;sp=[];
@@ -1023,49 +1089,50 @@ function doFatality(){
       }
       break;
     }
-    case 0: { // LINO-O (me=0) — salta y sale de escena, helicóptero llega y se estrella
+    case 0: { // LINO-O — helicóptero entra, baja lento, rebota y cae sobre la víctima
       snd('heli');
-      // Helicóptero entra desde el borde opuesto al actor
-      // Imagen original: cockpit a la IZQUIERDA, cola a la DERECHA
-      // Si heli viene de la derecha (vx<0) → cockpit apunta izquierda = OK (sin flip)
-      // Si heli viene de la izquierda (vx>0) → hay que flipear horizontalmente
-      const heliFromRight = actor.x > victim.x; // viene por el lado contrario al actor
-      const heliStartX = heliFromRight ? LW+300 : -300;
-      const heliVX = heliFromRight ? -1.8 : 1.8; // lento
+      // Imagen del heli: cockpit a la IZQUIERDA
+      // Viene desde la derecha (vx<0) → sin flip (cockpit mira izquierda=adelante)
+      // Viene desde la izquierda (vx>0) → flip para que cockpit mire derecha
+      const heliFromRight = actor.x > victim.x;
+      const heliStartX = heliFromRight ? LW+200 : -200;
+      const heliVX = heliFromRight ? -2.0 : 2.0;
       fatSeq=[
-        {t:0.0, a:'back_off'},
-        {t:0.4, a:'jump_exit'},
-        {t:4.5, a:'explosion_impact'},
-        {t:6.0, a:'pose'},
+        {t:0.0, a:'back_off'},{t:0.4, a:'jump_exit'},
+        {t:8.0, a:'explosion_impact'},{t:9.5, a:'pose'},
       ];
-      // Helicóptero grande: entra desde borde, baja lento, rebota, cae sobre víctima
-      // Fases: _phase 0=cruzando, 1=bajando, 2=rebotando, 3=cayendo final
+      // Helicóptero grande. delay:0.5 = aparece 0.5s después de iniciar fatality
       fatParticles.push({
-        x:heliStartX, y:120,
-        vx:heliVX, vy:0.4,
-        t:0, delay:0.6, life:9,
+        x:heliStartX, y:90,
+        vx:heliVX, vy:0,
+        t:0, delay:0.5, life:14,
         type:'heli_img',
-        col:'#cc0000', size:300,
-        _targetX:victim.x, _targetY:G,
-        _dead:false, _phase:0,
-        _phaseT:0,
-        _fromRight:heliFromRight
+        col:'#cc0000', size:290,
+        _targetX:victim.x,
+        _dead:false, _phase:0, _phaseT:0,
+        _fromRight:heliFromRight,
+        _boomTriggered:false
       });
-      // Explosión boom.gif en la BASE (y=G exacto), aparece al impactar
+      // Explosión, flash y debris — _waitBoom:true los mantiene inactivos
+      // Se activan automáticamente cuando el heli impacta (ver updateFatParticles)
       fatParticles.push({
-        x:victim.x, y:G-80, vx:0, vy:0,
-        t:0, delay:4.4, life:3.5,
-        type:'explosion_gif', col:'#ff8800', size:380
+        x:victim.x, y:G-70, vx:0, vy:0,
+        t:0, delay:9999, life:3.5,
+        type:'explosion_gif', col:'#ff8800', size:380, _waitBoom:true
       });
-      // Flash al impacto
-      fatParticles.push({x:victim.x,y:G-60,vx:0,vy:0,t:0,delay:4.4,life:0.5,type:'flash',col:'#ffffff',size:420});
-      // Debris en la base
+      fatParticles.push({
+        x:victim.x, y:G-50, vx:0, vy:0,
+        t:0, delay:9999, life:0.6,
+        type:'flash', col:'#ffffff', size:440, _waitBoom:true
+      });
       for(let i=0;i<35;i++){
         fatParticles.push({
-          x:victim.x+(Math.random()-0.5)*40, y:G-30,
-          vx:(Math.random()-0.5)*12, vy:-Math.random()*9-2,
-          t:0, delay:4.42, life:2.2,
-          type:'blood', col:i%3===0?'#cc0000':i%3===1?'#ff6600':'#888', size:6+Math.random()*12
+          x:victim.x+(Math.random()-0.5)*50, y:G-20,
+          vx:(Math.random()-0.5)*14, vy:-Math.random()*10-3,
+          t:0, delay:9999, life:2.2,
+          type:'blood',
+          col:i%3===0?'#cc0000':i%3===1?'#ff6600':'#888',
+          size:6+Math.random()*12, _waitBoom:true
         });
       }
       break;
@@ -1122,7 +1189,7 @@ function updateFatSeq(){
       // Actor retrocede lejos del rival
       actor.face=actor.x<victim.x?1:-1;
       const dist=actor.x<victim.x?-260:260;
-      actor.x=Math.max(60,Math.min(840,victim.x+dist));
+      actor.x=Math.max(Math.round(LW*0.067),Math.min(Math.round(LW*0.933),victim.x+dist));
       setS(actor,'walk');
     } else if(ev.a==='run'){
       actor.face=actor.x<victim.x?1:-1;
@@ -1207,53 +1274,56 @@ function updateFatParticles(){
         setS(victim,'ko');
       }
     } else if(p.type=='heli_img'){
-      // Helicóptero en 3 fases: 0=cruzando (vuela hacia víctima), 1=bajando lento, 2=rebote, 3=caída final
+      // FASES: 0=cruza pantalla a media altura, 1=baja lento sobre víctima, 2=rebote up, 3=caída final
       if(!p._dead){
         p._phaseT=(p._phaseT||0)+DT;
         const tx=p._targetX||victim.x;
-        const groundY=G-p.size*0.3; // base = justo sobre el suelo
+        // groundY = altura del suelo visible (G) ajustado por tamaño del heli
+        const groundY=G-20;
         if(p._phase===0){
-          // Vuela hacia la posición X de la víctima a media altura
+          // Fase 0: vuela horizontalmente hacia la X de la víctima, mantiene altura ~90
+          p.x+=p.vx;
+          // Suave estabilización de Y hacia 90
+          p.y+=(90-p.y)*0.04;
           const dist=Math.abs(p.x-tx);
-          if(dist<80){
-            // Llegó sobre la víctima — empieza a bajar
+          if(dist<60){
+            // Llegó encima de la víctima — para y empieza bajada lenta
             p._phase=1;p._phaseT=0;
-            p.vx=0; // para horizontal
-            p.vy=1.5; // empieza a caer lento
-          } else {
-            // Avanza hacia víctima
-            p.x+=p.vx;
-            p.y+=p.vy*0.3; // leve oscilación vertical
-            if(p._phaseT>1.5)p.vy=-p.vy*0.5; // leve ondulación
+            p.vx=0;p.vy=0.8;
           }
         } else if(p._phase===1){
-          // Bajando lento hacia la base
-          p.vy=Math.min(p.vy+0.08,4.0); // aceleración suave
+          // Fase 1: baja lento, acelerando suavemente
+          p.vy=Math.min(p.vy+0.06,3.5);
           p.y+=p.vy;
           if(p.y>=groundY){
-            // Tocó la base — rebote
+            // Rebote en el suelo
             p.y=groundY;
             p._phase=2;p._phaseT=0;
-            p.vy=-3.5; // rebota hacia arriba
+            p.vy=-4.0;
           }
         } else if(p._phase===2){
-          // Rebota hacia arriba
-          p.vy+=0.18; // gravedad ligera
+          // Fase 2: rebota hacia arriba
+          p.vy+=0.22;
           p.y+=p.vy;
           if(p.vy>=0){
-            // Empezó a bajar de nuevo — fase caída final
+            // Empieza a bajar de nuevo — caída final rápida
             p._phase=3;p._phaseT=0;
+            p.vy=0;
           }
         } else if(p._phase===3){
-          // Caída final rápida sobre víctima
-          p.vy=Math.min(p.vy+0.4,12);
+          // Fase 3: caída final acelerada
+          p.vy=Math.min(p.vy+0.5,15);
           p.y+=p.vy;
           if(p.y>=groundY&&!p._boom){
-            // IMPACTO en la base
             p._boom=true;p._dead=true;
-            snd('ko');shake=28;
-            victim._fatHidden=true; // víctima desaparece
+            snd('ko');shake=32;
+            victim._fatHidden=true;
             setS(victim,'ko');
+            // Activar todas las partículas en espera (_waitBoom)
+            const now=p.t;
+            fatParticles.forEach(q=>{
+              if(q._waitBoom){q.delay=0;q.t=0;q._waitBoom=false;}
+            });
           }
         }
       }
@@ -1332,7 +1402,8 @@ function drawFatParticles(){
     const relT=p.t-(p.delay||0);
     if(relT<0)return;
     if(p._hidden)return; // ocultar partícula tras impacto
-    const alpha=Math.max(0,1-relT/p.life);
+    // heli_img y moneybag no usan fade genérico — tienen su propio alpha
+    const alpha=(p.type=='heli_img'||p.type=='moneybag')?1:Math.max(0,1-relT/p.life);
     ctx.globalAlpha=alpha;
 
     if(p.type=='bill'){
@@ -1809,7 +1880,7 @@ function drawFatBar(){
 
   if(blink){
     ctx.font='9px "Press Start 2P",monospace';ctx.textAlign='center';
-    ctx.fillStyle='#FFD700';ctx.fillText('¡PRESIONA RÁPIDO! — FATALITY',450,y-30);
+    ctx.fillStyle='#FFD700';ctx.fillText('¡PRESIONA RÁPIDO! — FATALITY',LW/2,y-30);
   }
   // Timer bar (shrinking)
   const tPct=Math.max(0,fatTimer/4.5);
@@ -1838,10 +1909,10 @@ function drawRanking(){
 
   if(rankFromSplash){
     // Modo solo visualización desde el splash
-    tx('🏆 RANKING',450,60,20,'#FFD700');
-    tx('- MEJORES PUNTAJES -',450,100,9,'#ffd400');
+    tx('🏆 RANKING',LW/2,60,20,'#FFD700');
+    tx('- MEJORES PUNTAJES -',LW/2,100,9,'#ffd400');
     const topScores=savedScores.slice(0,8);
-    if(topScores.length===0){tx('(Sin puntajes aún)',450,200,9,'#555');}
+    if(topScores.length===0){tx('(Sin puntajes aún)',LW/2,200,9,'#555');}
     topScores.forEach((s,i)=>{
       const col=i==0?'#FFD700':i==1?'#C0C0C0':i==2?'#CD7F32':'#aaa';
       const medal=['🥇','🥈','🥉',''][Math.min(i,3)];
@@ -1851,31 +1922,31 @@ function drawRanking(){
     // Volver button
     ctx.fillStyle='#2a1a0a';ctx.fillRect(300,395,300,40);
     ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(300,395,300,40);
-    tx('◀ VOLVER',450,421,11,'#ffd400');
+    tx('◀ VOLVER',LW/2,421,11,'#ffd400');
     return;
   }
 
-  tx('¡VICTORIA TOTAL!',450,42,20,'#FFD700');
-  tx('JEFE FINAL DERROTADO',450,68,10,'#ff6');
+  tx('¡VICTORIA TOTAL!',LW/2,42,20,'#FFD700');
+  tx('JEFE FINAL DERROTADO',LW/2,68,10,'#ff6');
 
   // Player score big
   ctx.font='26px "Press Start 2P",monospace';ctx.textAlign='center';
   ctx.fillStyle='#000';ctx.fillText(playerScore.toLocaleString(),452,105);
-  ctx.fillStyle='#2ecc40';ctx.fillText(playerScore.toLocaleString(),450,103);
-  tx('PUNTOS',450,124,9,'#aaa');
+  ctx.fillStyle='#2ecc40';ctx.fillText(playerScore.toLocaleString(),LW/2,103);
+  tx('PUNTOS',LW/2,124,9,'#aaa');
 
   if(playerName){
     // Nombre ya guardado — mostrar confirmación
     ctx.fillStyle='rgba(0,80,0,0.3)';ctx.fillRect(200,135,500,45);
     ctx.strokeStyle='#2ecc40';ctx.lineWidth=2;ctx.strokeRect(200,135,500,45);
-    tx('✔ GUARDADO: '+playerName,450,165,11,'#2ecc40');
+    tx('✔ GUARDADO: '+playerName,LW/2,165,11,'#2ecc40');
   } else {
     // Name input area
     ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(200,135,500,55);
     ctx.strokeStyle='#ffd400';ctx.lineWidth=2;ctx.strokeRect(200,135,500,55);
-    tx('INGRESA TU NOMBRE:',450,157,8,'#ffd400');
+    tx('INGRESA TU NOMBRE:',LW/2,157,8,'#ffd400');
     const displayName=(rankNameInput||'')+(Math.floor(bl*2)%2?'█':'▏');
-    tx(displayName||'▏',450,178,13,'#fff');
+    tx(displayName||'▏',LW/2,178,13,'#fff');
   }
 
   // Buttons
@@ -1895,7 +1966,7 @@ function drawRanking(){
   tx('CONTINUAR',580,btnY+28,10,'#4488ff');
 
   // Top scores
-  tx('- MEJORES PUNTAJES -',450,268,9,'#ffd400');
+  tx('- MEJORES PUNTAJES -',LW/2,268,9,'#ffd400');
   const topScores=savedScores.slice(0,5);
   topScores.forEach((s,i)=>{
     const col=i==0?'#FFD700':i==1?'#C0C0C0':i==2?'#CD7F32':'#aaa';
@@ -1905,31 +1976,30 @@ function drawRanking(){
   });
 
   // Keyboard hint
-  if(!playerName&&Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',450,440,7,'#555');
-  if(playerName&&Math.floor(bl*2)%2)tx('ESPACIO=CONTINUAR PELEANDO',450,440,7,'#2ecc40');
+  if(!playerName&&Math.floor(bl*2)%2)tx('ESCRIBE TU NOMBRE • ENTER=GUARDAR • ESPACIO=CONTINUAR',LW/2,440,7,'#555');
+  if(playerName&&Math.floor(bl*2)%2)tx('ESPACIO=CONTINUAR PELEANDO',LW/2,440,7,'#2ecc40');
 }
 
 function drawTitleScores(){
   if(savedScores.length==0)return;
-  tx('RECORDS:',450,330,8,'#ffd400');
+  tx('RECORDS:',LW/2,330,8,'#ffd400');
   const top=savedScores.slice(0,3);
   top.forEach((s,i)=>{
     const col=i==0?'#FFD700':i==1?'#C0C0C0':'#CD7F32';
-    tx((i+1)+'. '+s.name+' - '+s.score.toLocaleString(),450,350+i*18,7,col);
+    tx((i+1)+'. '+s.name+' - '+s.score.toLocaleString(),LW/2,350+i*18,7,col);
   });
 }
 
 function draw(){
   ctx.setTransform(1,0,0,1,0,0);
-  cv.width=LW;cv.height=LH;
   ctx.clearRect(0,0,LW,LH);
 
   imgs=countImgs(); // recount every frame — base64 images may load synchronously
   if(imgs<need){
     ctx.fillStyle='#0a0a1a';ctx.fillRect(0,0,LW,LH);
     // Title
-    tx('SANTI',450,120,46,'#ffd400');
-    tx('FIGHTERS',450,182,42,'#ff3b3b');
+    tx('SANTI',LW/2,120,46,'#ffd400');
+    tx('FIGHTERS',LW/2,182,42,'#ff3b3b');
     // Progress bar
     const pct=need>0?imgs/need:0;
     const bw=400,bh=24,bx=(LW-bw)/2,by=240;
@@ -1962,15 +2032,15 @@ function draw(){
       const off=Math.sin(bl*2+i)*5;
       spr(D.c[i],'idle',90+i*180,off,i<3?1:-1);
     }
-    tx('SANTI',450,100,46,'#ffd400');
-    tx('FIGHTERS',450,162,42,'#ff3b3b');
-    if(Math.floor(bl*2)%2)tx('TOCA PARA COMENZAR',450,235,12,'#fff');
+    tx('SANTI',LW/2,100,46,'#ffd400');
+    tx('FIGHTERS',LW/2,162,42,'#ff3b3b');
+    if(Math.floor(bl*2)%2)tx('TOCA PARA COMENZAR',LW/2,235,12,'#fff');
     // Show boss unlocked hint
-    if(bossUnlocked)tx('★ LINO-O DESBLOQUEADO ★',450,262,9,'#ff4444');
+    if(bossUnlocked)tx('★ LINO-O DESBLOQUEADO ★',LW/2,262,9,'#ff4444');
     drawTitleScores();
   }
   else if(sc=='select'){
-    tx('ELIGE TU LUCHADOR',450,55,18,'#ffd400');
+    tx('ELIGE TU LUCHADOR',LW/2,55,18,'#ffd400');
     const total=bossUnlocked?5:4;
     for(let i=0;i<5;i++){
       const cx=45+i*165;
@@ -1989,25 +2059,25 @@ function draw(){
       }
       ctx.strokeStyle=isLocked?'#333':'#ffd400';ctx.lineWidth=3;ctx.strokeRect(cx-3,100,158,215);
     }
-    tx('¡DERROTA A TODOS Y AL JEFE FINAL!',450,345,9,'#aaa');
-    if(playerScore>0)tx('PUNTAJE: '+playerScore.toLocaleString(),450,368,8,'#2ecc40');
+    tx('¡DERROTA A TODOS Y AL JEFE FINAL!',LW/2,345,9,'#aaa');
+    if(playerScore>0)tx('PUNTAJE: '+playerScore.toLocaleString(),LW/2,368,8,'#2ecc40');
   }
   else if(sc=='win'){
     spr(P.c,'win',350,0,1);
     spr(D.c[0],'hurt',650,0,-1);
-    tx('¡VICTORIA TOTAL!',450,80,24,'#FFD700');
-    tx('¡JEFE FINAL DERROTADO!',450,118,12,'#ff6');
-    tx('★ LINO-O DESBLOQUEADO COMO LUCHADOR ★',450,145,8,'#ff4444');
-    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,180,11,'#fff');
+    tx('¡VICTORIA TOTAL!',LW/2,80,24,'#FFD700');
+    tx('¡JEFE FINAL DERROTADO!',LW/2,118,12,'#ff6');
+    tx('★ LINO-O DESBLOQUEADO COMO LUCHADOR ★',LW/2,145,8,'#ff4444');
+    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',LW/2,180,11,'#fff');
   }
   else if(sc=='lose'){
-    spr(P.c,'hurt',450,0,1);
-    tx('GAME OVER',450,100,36,'#f33');
-    tx('PUNTAJE FINAL: '+playerScore.toLocaleString(),450,152,12,'#ff6');
+    spr(P.c,'hurt',LW/2,0,1);
+    tx('GAME OVER',LW/2,100,36,'#f33');
+    tx('PUNTAJE FINAL: '+playerScore.toLocaleString(),LW/2,152,12,'#ff6');
     if(playerName){
-      tx('✔ GUARDADO EN RANKING: '+playerName,450,178,8,'#2ecc40');
+      tx('✔ GUARDADO EN RANKING: '+playerName,LW/2,178,8,'#2ecc40');
     }
-    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',450,210,11,'#fff');
+    if(mt<0&&Math.floor(bl*2)%2)tx('TOCA PARA CONTINUAR',LW/2,210,11,'#fff');
   }
   else if(sc=='ranking'){
     drawRanking();
@@ -2089,9 +2159,9 @@ function draw(){
     });
 
     // HUD
-    bar(70,P,0);bar(830,E,1);
+    bar(Math.round(LW*0.078),P,0);bar(Math.round(LW*0.922),E,1);
     // Spec bar (player only, below HP bar)
-    {const sw=200,sl=70,sv=specBar/100;
+    {const sw=200,sl=Math.round(LW*0.078),sv=specBar/100;
     ctx.fillStyle='#111';ctx.fillRect(sl-2,47,sw+4,12);
     if(sv>0){
       const sg=ctx.createLinearGradient(sl,0,sl+sw,0);
@@ -2138,31 +2208,31 @@ function draw(){
     const tCol=timeLeft<=10?'#f33':timeLeft<=30?'#ff0':'#fff';
     ctx.font='20px "Press Start 2P",monospace';ctx.textAlign='center';
     ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText(timeLeft,452,52);
-    ctx.fillStyle=tCol;ctx.fillText(timeLeft,450,50);
+    ctx.fillStyle=tCol;ctx.fillText(timeLeft,LW/2,50);
 
     // Round dots
-    drawRoundDots(380,roundWinsP,false);
-    drawRoundDots(520,roundWinsE,true);
-    tx('R'+round,450,70,8,'#aaa');
+    drawRoundDots(Math.round(LW*0.422),roundWinsP,false);
+    drawRoundDots(Math.round(LW*0.578),roundWinsE,true);
+    tx('R'+round,LW/2,70,8,'#aaa');
 
     if(sc=='intro'){
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,80,900,120);
-      tx(msg,450,145,20,E.c===D.c[0]?'#ff4':'#ffd400');
-      if(mt<.8)tx('¡PELEA!',450,195,30,'#f33');
+      tx(msg,LW/2,145,20,E.c===D.c[0]?'#ff4':'#ffd400');
+      if(mt<.8)tx('¡PELEA!',LW/2,195,30,'#f33');
     }
     if(sc=='end'||sc=='roundend'){
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,130,900,100);
-      tx(roundResult=='P'?'K.O.':roundResult=='E'?'K.O.':'EMPATE',450,195,44,'#f33');
-      if(sc=='roundend'&&mt>0.8)tx('RONDA '+round+' EN BREVE...',450,250,11,'#aaa');
+      tx(roundResult=='P'?'K.O.':roundResult=='E'?'K.O.':'EMPATE',LW/2,195,44,'#f33');
+      if(sc=='roundend'&&mt>0.8)tx('RONDA '+round+' EN BREVE...',LW/2,250,11,'#aaa');
     }
     if(sc=='fatready'){
       ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,70,900,120);
       if(fatByEnemy){
-        tx('¡FATALITY!',450,110,36,'#ff0000');
-        tx('¡PREPÁRATE!',450,152,18,'#ff4400');
+        tx('¡FATALITY!',LW/2,110,36,'#ff0000');
+        tx('¡PREPÁRATE!',LW/2,152,18,'#ff4400');
       } else {
-        tx('¡FINISH HIM!',450,110,30,'#ff0000');
-        tx('¡PRESIONA FATALITY!',450,152,16,'#ff4400');
+        tx('¡FINISH HIM!',LW/2,110,30,'#ff0000');
+        tx('¡PRESIONA FATALITY!',LW/2,152,16,'#ff4400');
         drawFatBar();
       }
     }
@@ -2173,18 +2243,18 @@ function draw(){
         ctx.globalAlpha=0.12+Math.abs(Math.sin(bl*12))*0.08;
         ctx.fillStyle='#ff0000';ctx.fillRect(0,0,900,450);
         ctx.globalAlpha=1;
-        tx('¡BRUTALITY!',450,95,28,'#ff0000');
+        tx('¡BRUTALITY!',LW/2,95,28,'#ff0000');
         if(fatHitCount>0){
           ctx.font='bold 32px "Press Start 2P",monospace';ctx.textAlign='center';
           ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillText(fatHitCount+'x HIT',452,138);
-          ctx.fillStyle='#FFD700';ctx.fillText(fatHitCount+'x HIT',450,136);
+          ctx.fillStyle='#FFD700';ctx.fillText(fatHitCount+'x HIT',LW/2,136);
         }
       } else {
         // Resto de fatalities — overlay + título
         ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(0,0,900,450);
         const fatNames={0:'¡KAMIKAZE!',2:'¡INFERNO!',3:'¡BOMBARDEO!',4:'¡AVALANCHA!'};
         const fatTitle=fatNames[actorIdx]||'¡FATALITY!';
-        tx(fatTitle,450,105,actorIdx===4?16:26,'#ff0000');
+        tx(fatTitle,LW/2,105,actorIdx===4?16:26,'#ff0000');
         ctx.globalAlpha=0.25+Math.abs(Math.sin(bl*6))*0.15;
         ctx.fillStyle='#ff0000';ctx.fillRect(0,0,900,450);
         ctx.globalAlpha=1;
@@ -2196,10 +2266,10 @@ function draw(){
     if(sc=='fatend'){
       ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(0,0,900,450);
       if(fatByEnemy){
-        tx('HUMILLADO',450,180,32,'#ff0000');
+        tx('HUMILLADO',LW/2,180,32,'#ff0000');
       } else {
-        tx('¡PERFECTO!',450,180,34,'#FFD700');
-        tx('+10,000 PUNTOS',450,220,11,'#2ecc40');
+        tx('¡PERFECTO!',LW/2,180,34,'#FFD700');
+        tx('+10,000 PUNTOS',LW/2,220,11,'#2ecc40');
       }
     }
 
@@ -2442,37 +2512,3 @@ onkeydown=e=>{
     }
     if(rankFromSplash){
       rankFromSplash=false;sc='title';
-      document.getElementById('splash').style.display='flex';
-      e.preventDefault();return;
-    }
-    if(e.key==='Enter'){
-      if(!playerName&&rankNameInput.length>0){
-        playerName=rankNameInput;saveScoreEntry();snd('win');
-        _hideRankOverlay();
-      } else if(playerName){
-        saveScoreEntry();_hideRankOverlay();
-        fi=0;roundWinsP=0;roundWinsE=0;round=1;sc='select';startMenuMusic();
-      }
-      return;
-    }
-    if(!playerName){
-      if(e.key==='Backspace'){
-        rankNameInput=rankNameInput.slice(0,-1);
-        const inp=document.getElementById('rank-input');if(inp)inp.value=rankNameInput;
-        return;
-      }
-      if(e.key.length===1&&rankNameInput.length<10){
-        rankNameInput+=(e.key.toUpperCase());
-        const inp=document.getElementById('rank-input');if(inp)inp.value=rankNameInput;
-        return;
-      }
-    }
-  }
-  const k=KM[e.key];if(!k)return;
-  if(k=='p'||k=='k'||k=='sp'||k=='u'){if(!e.repeat)T[k]=1;} // u es flanco, no held
-  else if(k=='fat'){if(!e.repeat)T.fat=1;}
-  else K[k]=1;
-};
-onkeyup=e=>{const k=KM[e.key];if(k&&k!='p'&&k!='k'&&k!='fat'&&k!='u')K[k]=0;};
-
-</script></body></html>
